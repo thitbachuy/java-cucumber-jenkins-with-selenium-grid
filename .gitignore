@@ -1,0 +1,34 @@
+# Ignore anything...
+*
+!*/
+
+# ...except (extensions)
+!*.feature
+!*.java
+
+# ...except (specific files)
+!data/usp-codeformat.xml
+!data/usp.importorder
+!src/test/java/config/*
+!src/main/java/testdata/input/*
+!src/main/java/testdata/skyjiraauth.json
+!src/main/java/testdata/remote_testPKJSON.json
+!src/main/java/testdata/style.css
+!src/main/java/testdata/apibody/**
+!src/test/java/info.txt
+!src/test/resources/log4j2.xml
+!.editorconfig
+!.gitignore
+!Jenkinsfile
+!pom.xml
+
+# ...except (folders, recursive)
+!.idea/runConfigurations/**
+!src/test/java/templates/**
+!src/main/java/testdata/staticfiles/**
+!selenium-resources/**
+
+target/**
+
+.idea
+/target/

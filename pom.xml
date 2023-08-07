@@ -14,8 +14,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.maven.plugin.version>2.22.2</surefire.maven.plugin.version>
     <openhtml.version>1.0.1</openhtml.version>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
     <oracle.jdbc.version>19.7.0.0</oracle.jdbc.version>
     <version.aspectj>1.9.2</version.aspectj>
     <!-- JaCoCo Properties -->
@@ -54,17 +52,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M4</version>
         <configuration>
-<!--          <argLine>-->
-<!--            -Xmx2048m-->
-<!--            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${version.aspectj}/aspectjweaver-${version.aspectj}.jar"-->
-<!--          </argLine>-->
-<!--          <suiteXmlFiles>-->
-<!--            <suiteXmlFile>testconf/desktop/regression.xml</suiteXmlFile>-->
-<!--          </suiteXmlFiles>-->
           <properties>
             <property>
               <name>dataproviderthreadcount</name>
-              <value>5</value>
+              <value>1</value>
             </property>
           </properties>
           <parallel>methods</parallel>
@@ -223,11 +214,6 @@
       <version>${cucumber.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-picocontainer</artifactId>
-      <version>${cucumber.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
       <version>${selenium.version}</version>
@@ -267,14 +253,6 @@
       <artifactId>maven-surefire-plugin</artifactId>
       <version>${surefire.maven.plugin.version}</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.uncommons/reportng -->
-    <dependency>
-      <groupId>org.uncommons</groupId>
-      <artifactId>reportng</artifactId>
-      <version>1.1.4</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf -->
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
@@ -383,26 +361,6 @@
       <groupId>org.jacoco</groupId>
       <artifactId>jacoco-maven-plugin</artifactId>
       <version>${jacoco.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>${version.aspectj}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>${version.aspectj}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-testng</artifactId>
-      <version>4.3.0</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-testng</artifactId>
-      <version>4.3.0</version>
     </dependency>
   </dependencies>
 </project>
