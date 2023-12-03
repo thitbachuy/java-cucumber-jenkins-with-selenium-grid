@@ -241,8 +241,8 @@ public class BasePage {
         count++;
       }
     }
-    wait.until(ExpectedConditions.invisibilityOfElementLocated(
-      By.xpath("//*[@class='loadingIndicatorIcon']")));
+//    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+//      By.xpath("//*[@class='loadingIndicatorIcon']")));
   }
 
   public WebElement findElement(String locatorWebElement, String webElement) {

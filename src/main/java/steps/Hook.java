@@ -5,6 +5,8 @@ import static config.DriverUtil.threadLocalActiveBrowsers;
 import static config.FilesUtils.saveExecutionGeneralInfoToExcelFile;
 import static config.FilesUtils.updateTestResultsSummaryToExcelFile;
 
+import com.assertthat.selenium_shutterbug.core.Capture;
+import com.assertthat.selenium_shutterbug.core.Shutterbug;
 import config.AppiumServer;
 import config.BasePage;
 import config.DriverUtil;
@@ -21,6 +23,7 @@ import io.cucumber.plugin.event.PickleStepTestStep;
 import io.cucumber.plugin.event.Result;
 import io.cucumber.plugin.event.Step;
 import io.cucumber.plugin.event.TestCase;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -148,7 +151,7 @@ public class Hook {
       failedScenarios.add(scenarioTags.toString());
       LOG.info("Scenario with the following tags '{}' failed", scenarioTags);
       if (DriverUtil.getDriver() != null) {
-//        captureFullScreenShot(scenario);
+        captureFullScreenShot(scenario);
       }
       if (isPartializedScenario) {
         SKIP_TEST_ON_ERROR = true;
@@ -246,16 +249,16 @@ public class Hook {
     }
   }
 
-//  public static void captureFullScreenShot(Scenario message) {
-//    byte[] screenshot;
-//    try {
-//      screenshot = Shutterbug.shootPage(DriverUtil.getDriver(), Capture.FULL).getBytes();
-//      message.attach(screenshot, "image/png",
-//        message.getName().replace(" ", "_") + "_full_error_screenshot");
-//    } catch (IOException e) {
-//      LOG.info("Can not capture full screenshot: ", e);
-//    }
-//}
+  public static void captureFullScreenShot(Scenario message) {
+    byte[] screenshot;
+    try {
+      screenshot = Shutterbug.shootPage(DriverUtil.getDriver(), Capture.FULL).getBytes();
+      message.attach(screenshot, "image/png",
+        message.getName().replace(" ", "_") + "_full_error_screenshot");
+    } catch (IOException e) {
+      LOG.info("Can not capture full screenshot: ", e);
+    }
+  }
 
   public static void addHttpHeaders() {
     DriverUtil.getDriver().get(

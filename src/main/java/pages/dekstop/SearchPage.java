@@ -8,6 +8,8 @@ import locators.desktop.SearchLocators;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.Assert;
+import org.testng.asserts.Assertion;
 
 public class SearchPage extends BasePage {
 
@@ -28,5 +30,11 @@ public class SearchPage extends BasePage {
 
   public void openUrl(String url) {
     DriverUtil.threadLocalActiveBrowsers.get().get("current").get(url);
+  }
+
+  public void verifyTitlePage(String title) {
+    waitForPageLoaded();
+    boolean status = DriverUtil.threadLocalActiveBrowsers.get().get("current").getTitle().contains(title);
+    Assert.assertTrue(status,"Wrong page !");
   }
 }
