@@ -165,3 +165,6 @@ curl -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer $t
 - Run cmd (git bash if window os)
 
   updateTestSetAndTestExecution.sh <path/to/project/directory> <path/to/cloudAuthen.json>
+
+===============================================================
+mvn clean verify -Dcucumber.filter.tags=@Google -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop

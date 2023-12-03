@@ -15,7 +15,7 @@ store knowledge you might need
 
         git clone (empty direcotsy)
 
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
+mvn clean verify -Dcucumber.filter.tags=@Google -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
 mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=edge -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
 mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=firefox -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
 

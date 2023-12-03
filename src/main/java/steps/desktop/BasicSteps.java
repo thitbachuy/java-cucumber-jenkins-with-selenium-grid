@@ -91,27 +91,27 @@ public class BasicSteps {
     basicPage.switchTab(tab);
   }
 
-  @Then("the user open browser {string}")
-  public void openBrowser(String browserName) {
-    DriverUtil.openBrowser(browserName);
-  }
-
-  @Then("the user open browser {string} with incognito")
-  public void openBrowserWithIncognito(String browserName) {
-    DriverUtil.openBrowserWithIncognito(browserName);
-  }
-
-  @Then("open browser {string} with incognito and proxy")
-  public void openBrowserWithIncognitoAndProxy(String browserName) {
-    DriverUtil.openBrowserWithProxy(browserName);
-  }
-
-  @Given("when browser is configured for proxy and open {string}")
-  public void openBrowserWithProxy(String url) {
-    String browser = Hook.browser;
-    DriverUtil.openBrowserWithProxy(browser);
-    basicPage.openURL(basicPage.loadUrl(url));
-  }
+//  @Then("the user open browser {string}")
+//  public void openBrowser(String browserName) {
+//    DriverUtil.openBrowser(browserName);
+//  }
+//
+//  @Then("the user open browser {string} with incognito")
+//  public void openBrowserWithIncognito(String browserName) {
+//    DriverUtil.openBrowserWithIncognito(browserName);
+//  }
+//
+//  @Then("open browser {string} with incognito and proxy")
+//  public void openBrowserWithIncognitoAndProxy(String browserName) {
+//    DriverUtil.openBrowserWithProxy(browserName);
+//  }
+//
+//  @Given("when browser is configured for proxy and open {string}")
+//  public void openBrowserWithProxy(String url) {
+//    String browser = Hook.browser;
+//    DriverUtil.openBrowserWithProxy(browser);
+//    basicPage.openURL(basicPage.loadUrl(url));
+//  }
 
   @Given("the user switches to browser {string}")
   public void the_user_switches_to_browser_string(String browserName) {
@@ -263,10 +263,10 @@ public class BasicSteps {
     basicPage.subStringAndSaveInDataRunTime(string, startIndex, endIndex, keyToSave);
   }
 
-  @When("the user generates test set and test execution json files")
-  public void the_user_generates_test_set_and_test_execution_json_files() {
-    (new FilesUtils()).createTestSetAndTestExecutionJsonFile();
-  }
+//  @When("the user generates test set and test execution json files")
+//  public void the_user_generates_test_set_and_test_execution_json_files() {
+//    (new FilesUtils()).createTestSetAndTestExecutionJsonFile();
+//  }
 
   @When("the user gets output of devtool console command {string} on current page")
   public void the_user_gets_output_of_devtool_console_command_string_on_current_page(

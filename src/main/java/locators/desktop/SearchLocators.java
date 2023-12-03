@@ -2,10 +2,8 @@ package locators.desktop;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
-public class GoogleLocators {
+public class SearchLocators {
 
   public static Map<String, String> createLibraryInput() {
     Map<String, String> xpathToInput = new HashMap<>();

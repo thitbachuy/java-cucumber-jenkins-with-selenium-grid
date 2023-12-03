@@ -1,16 +1,16 @@
-package steps.desktop.google;
+package steps.desktop;
 
 import config.DriverUtil;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
-import pages.dekstop.google.GooglePage;
+import pages.dekstop.SearchPage;
 
-public class GoogleSteps {
+public class SearchSteps {
 
-  private GooglePage page;
+  private SearchPage page;
 
-  public GoogleSteps() {
-    page = new GooglePage(DriverUtil.getDriver());
+  public SearchSteps() {
+    page = new SearchPage(DriverUtil.getDriver());
   }
 
   @When("the user enters {string} into {string} input")
