@@ -1,24 +1,24 @@
-package pages.dekstop.google;
+package pages.dekstop;
 
 import config.BasePage;
 import config.DriverUtil;
 import core.ProcessElement;
 import java.util.Map;
-import locators.desktop.GoogleLocators;
+import locators.desktop.SearchLocators;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-public class GooglePage extends BasePage {
+public class SearchPage extends BasePage {
 
   public ProcessElement processElement;
 
-  public GooglePage(RemoteWebDriver driver) {
+  public SearchPage(RemoteWebDriver driver) {
     super(driver);
   }
 
-  private static final Logger LOG = LogManager.getLogger(GooglePage.class);
-  private final Map<String, String> xpathToInput = GoogleLocators.createLibraryInput();
+  private static final Logger LOG = LogManager.getLogger(SearchPage.class);
+  private final Map<String, String> xpathToInput = SearchLocators.createLibraryInput();
 
   public void enterData(String data, String element) {
     waitForPageLoaded();

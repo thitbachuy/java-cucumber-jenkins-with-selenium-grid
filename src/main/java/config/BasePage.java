@@ -5,52 +5,62 @@ package config;
     If you have additional basic functions please enter in here as all Page classes are extended from BasePage
 */
 
+import static steps.Hook.threadLocalCookieAccepted;
+
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.cucumber.core.exception.CucumberException;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import modal.Directions;
 import modal.LocatorType;
-import modal.SkyChannelImgName;
 import modal.TableInformation;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.select.Elements;
 import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.*;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.dekstop.partnerportal.PartnerPortalContractPage;
-import pages.dekstop.salesforce.SfReportsMainPage;
 import pages.ios.IosBasicPage;
 import steps.Hook;
-
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static steps.Hook.threadLocalCookieAccepted;
 
 public class BasePage {
 
   private static final Logger LOG = LogManager.getLogger(BasePage.class);
   private static final int WAIT_TIMEOUT = 60;
   public static ThreadLocal<RemoteWebDriver> threadLocalDriverBasePage = new ThreadLocal<>();
-  private final Map<String, String> channelImgName = SkyChannelImgName.createChannelImgLibrary();
   private IosBasicPage iosBasicPage;
   private final TableInformation tableInformation = new TableInformation();
   private static final Random r = new Random();
 
   public BasePage(RemoteWebDriver driver) {
-    threadLocalDriverBasePage.set(DriverUtil.threadLocalActiveBrowsers.get().getOrDefault("current", driver));
+    threadLocalDriverBasePage.set(
+      DriverUtil.threadLocalActiveBrowsers.get().getOrDefault("current", driver));
   }
 
   public void enterText(String text, String locatorTextField, String textField) {
@@ -60,21 +70,29 @@ public class BasePage {
     if (!textFieldElem.isDisplayed()) {
       throw new CucumberException("TextField " + textField + " not found!");
     }
-    if ((textFieldElem.getText() != null && !textFieldElem.getText().isEmpty()) || (textFieldElem.getAttribute("value") != null && !textFieldElem.getAttribute("value").isEmpty()) || textField.equals("tweet")) {
+    if ((textFieldElem.getText() != null && !textFieldElem.getText().isEmpty()) || (
+      textFieldElem.getAttribute("value") != null && !textFieldElem.getAttribute("value").isEmpty())
+      || textField.equals("tweet")) {
       clearTextOnTextField(textFieldElem);
     }
     if (!Hook.platform.equals("ios-webApp")) {
       clearWebField(textFieldElem);  //clears all text in textbox
     }
     textFieldElem.sendKeys(text);
-    if (textField.contains("assword") || textField.contains("PW") || textField.contains("pw") || textField.contains("pin") || textField.contains("PIN") || textField.contains("Pin") || textField.contains("mp")) {
+    if (textField.contains("assword") || textField.contains("PW") || textField.contains("pw")
+      || textField.contains("pin") || textField.contains("PIN") || textField.contains("Pin")
+      || textField.contains("mp")) {
       LOG.info("\"********\" entered into TextField \"{}\" ", textField);
     } else {
       LOG.info("\"{}\" entered into TextField \"{}\" ", text, textField);
     }
-    if (Hook.platform.equals("android-webApp")) ((AndroidDriver) threadLocalDriverBasePage.get()).hideKeyboard();
+    if (Hook.platform.equals("android-webApp")) {
+      ((AndroidDriver) threadLocalDriverBasePage.get()).hideKeyboard();
+    }
     if (Hook.platform.equals("ios-webApp")) {
-      iosBasicPage = iosBasicPage == null ? new IosBasicPage(((IOSDriver) threadLocalDriverBasePage.get())) : iosBasicPage;
+      iosBasicPage =
+        iosBasicPage == null ? new IosBasicPage(((IOSDriver) threadLocalDriverBasePage.get()))
+          : iosBasicPage;
       iosBasicPage.closeKeyboard();
     }
   }
@@ -84,14 +102,19 @@ public class BasePage {
     textFieldElem.sendKeys(Keys.DELETE);
     int attempts = 0;
     do {
-      if ((textFieldElem.getText() == null || textFieldElem.getText().isEmpty()) && (textFieldElem.getAttribute("value") == null || textFieldElem.getAttribute("value").isEmpty()))
+      if ((textFieldElem.getText() == null || textFieldElem.getText().isEmpty()) && (
+        textFieldElem.getAttribute("value") == null || textFieldElem.getAttribute("value")
+          .isEmpty())) {
         break;
+      }
       waitFor(250).milliseconds();
       LOG.info("Trying to clear text field again");
       textFieldElem.clear();
       attempts++;
     } while (attempts < 10);
-    if (attempts == 10) LOG.info("Cannot clear text field after 10 times trying");
+    if (attempts == 10) {
+      LOG.info("Cannot clear text field after 10 times trying");
+    }
   }
 
   public void clickWebElement(String locatorWebElement, String webElement) {
@@ -129,7 +152,8 @@ public class BasePage {
   }
 
   public WebElement waitForElementToBeClickable(By by, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.elementToBeClickable(by));
   }
 
@@ -138,27 +162,32 @@ public class BasePage {
   }
 
   public WebElement waitForElementToBeClickable(By by) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(WAIT_TIMEOUT));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(WAIT_TIMEOUT));
     return wait.until(ExpectedConditions.elementToBeClickable(by));
   }
 
   public WebElement waitForVisibilityOfElementLocated(By by) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(WAIT_TIMEOUT));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(WAIT_TIMEOUT));
     return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
   }
 
   public Boolean waitForInvisibilityOfElementLocated(By by) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(WAIT_TIMEOUT));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(WAIT_TIMEOUT));
     return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
   }
 
   public Boolean waitForInvisibilityOfElementLocated(By by, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
   }
 
   public WebElement waitForPresenceOfElementLocated(By by) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(WAIT_TIMEOUT));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(WAIT_TIMEOUT));
     return wait.until(ExpectedConditions.presenceOfElementLocated(by));
   }
 
@@ -167,38 +196,53 @@ public class BasePage {
     return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
   }
 
-  public Boolean waitUntilElementHasAttributeContains(WebElement element, String attribute, String value, int waitTimeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(waitTimeout));
+  public Boolean waitUntilElementHasAttributeContains(WebElement element, String attribute,
+    String value, int waitTimeout) {
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(waitTimeout));
     return wait.until(ExpectedConditions.attributeContains(element, attribute, value));
   }
 
-  public Boolean waitUntilElementAttributeNotContains(WebElement element, String attribute, String value, int waitTimeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(waitTimeout));
-    return wait.until(ExpectedConditions.not(ExpectedConditions.attributeContains(element, attribute, value)));
+  public Boolean waitUntilElementAttributeNotContains(WebElement element, String attribute,
+    String value, int waitTimeout) {
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(waitTimeout));
+    return wait.until(
+      ExpectedConditions.not(ExpectedConditions.attributeContains(element, attribute, value)));
   }
 
-  public Boolean waitUntilElementHaveAttributeValueEquals(By locator, String attribute, String value, int waitTimeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(waitTimeout));
+  public Boolean waitUntilElementHaveAttributeValueEquals(By locator, String attribute,
+    String value, int waitTimeout) {
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(waitTimeout));
     return wait.until(ExpectedConditions.attributeToBe(locator, attribute, value));
   }
 
   public Boolean waitUntilElementContainsTexts(By by, String value, int waitTimeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(waitTimeout));
-    return wait.until(ExpectedConditions.textToBePresentInElement(waitForVisibilityOfElementLocated(by, waitTimeout), value));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(waitTimeout));
+    return wait.until(ExpectedConditions.textToBePresentInElement(
+      waitForVisibilityOfElementLocated(by, waitTimeout), value));
   }
 
   public void waitForPageLoaded() {
     WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(50));
-    wait.until(wd -> ((threadLocalDriverBasePage.get()).executeScript("return document.readyState").equals("complete")));
+    wait.until(wd -> ((threadLocalDriverBasePage.get()).executeScript("return document.readyState")
+      .equals("complete")));
     int count = 0;
-    if ((boolean) (threadLocalDriverBasePage.get()).executeScript("return window.jQuery != undefined")) {
-      while (!(boolean) (threadLocalDriverBasePage.get()).executeScript("return jQuery.active == 0")) {
+    if ((boolean) (threadLocalDriverBasePage.get()).executeScript(
+      "return window.jQuery != undefined")) {
+      while (!(boolean) (threadLocalDriverBasePage.get()).executeScript(
+        "return jQuery.active == 0")) {
         waitFor(1).seconds();
-        if (count > 400) break;
+        if (count > 400) {
+          break;
+        }
         count++;
       }
     }
-    wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@class='loadingIndicatorIcon']")));
+    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+      By.xpath("//*[@class='loadingIndicatorIcon']")));
   }
 
   public WebElement findElement(String locatorWebElement, String webElement) {
@@ -222,6 +266,7 @@ public class BasePage {
     select.selectByIndex(Integer.parseInt(index));
 
   }
+
   public void selectFromDropdownByValueEQUAL(String locatorWebElement, String valueToSelect) {
     if (locatorWebElement == null || locatorWebElement.isEmpty()) {
       throw new CucumberException("no Locator given for Dropdown");
@@ -240,7 +285,9 @@ public class BasePage {
     waitForSpinnerSF(1);
     waitForSpinnerCDP(1);
     WebElement element = null;
-    List<WebElement> multipleElements = threadLocalDriverBasePage.get().findElements(By.xpath("//*[@role='presentation' or @role='menuitem' or @role='option']//*[text()='" + valueToSelect + "' and not(ancestor::a[@*='tab-name'])][1] | //option[text()='" + valueToSelect + "']"));
+    List<WebElement> multipleElements = threadLocalDriverBasePage.get().findElements(By.xpath(
+      "//*[@role='presentation' or @role='menuitem' or @role='option']//*[text()='" + valueToSelect
+        + "' and not(ancestor::a[@*='tab-name'])][1] | //option[text()='" + valueToSelect + "']"));
     for (WebElement e : multipleElements) {
       boolean displayed = e.isDisplayed();
       boolean enabled = e.isEnabled();
@@ -254,12 +301,14 @@ public class BasePage {
     if (element != null) {
       scrollTo(element);
       element.click();
-    } else
+    } else {
       throw new CucumberException("Cannot find option. Please recheck!");
+    }
   }
 
   public void waitForNewTabSky(int expectedTabs, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     wait.until(ExpectedConditions.urlContains("sky"));
     int counter = 0;
     while (true) {
@@ -290,7 +339,8 @@ public class BasePage {
       throw new CucumberException("no Locator given for your element");
     }
 
-    threadLocalDriverBasePage.get().executeScript("arguments[0].click();", waitForVisibilityOfElementLocated(By.xpath(locatorWebElement)));
+    threadLocalDriverBasePage.get().executeScript("arguments[0].click();",
+      waitForVisibilityOfElementLocated(By.xpath(locatorWebElement)));
     waitForPageLoaded();
   }
 
@@ -300,7 +350,9 @@ public class BasePage {
       try {
         waitForVisibilityOfElementLocated(By.xpath(spMessageIframeLocator), 15);
         String acceptCookieXpath = "//*[contains(@title, 'Alle akzeptieren') or contains(@name, 'Alle akzeptieren')]";
-        iosBasicPage = iosBasicPage == null ? new IosBasicPage((IOSDriver) threadLocalDriverBasePage.get()) : iosBasicPage;
+        iosBasicPage =
+          iosBasicPage == null ? new IosBasicPage((IOSDriver) threadLocalDriverBasePage.get())
+            : iosBasicPage;
         iosBasicPage.switchContext("NATIVE");
         iosBasicPage.scrollToElement(acceptCookieXpath, acceptCookieXpath, "up", 500);
         iosBasicPage.tapElementByXpath(acceptCookieXpath, false);
@@ -317,9 +369,12 @@ public class BasePage {
           LOG.info("Checking for Sky CDP cookie popup");
           waitForSpinnerCDP(2);
           waitForVisibilityOfElementLocated(By.xpath(spMessageIframeLocator), 4);
-          threadLocalDriverBasePage.get().switchTo().frame(threadLocalDriverBasePage.get().findElement(By.xpath(spMessageIframeLocator)));
-          waitForElementToBeClickable(By.xpath("//button[contains(.,'OK') or (contains(.,'Alle') and not(contains(., 'Alle Preisdetails'))) or contains (.,'akzeptieren') or contains (.,'Akzeptieren')]"));
-          clickOrEvaluateAndClick("//button[contains(.,'OK') or (contains(.,'Alle') and not(contains(., 'Alle Preisdetails'))) or contains (.,'akzeptieren') or contains (.,'Akzeptieren')]");
+          threadLocalDriverBasePage.get().switchTo()
+            .frame(threadLocalDriverBasePage.get().findElement(By.xpath(spMessageIframeLocator)));
+          waitForElementToBeClickable(By.xpath(
+            "//button[contains(.,'OK') or (contains(.,'Alle') and not(contains(., 'Alle Preisdetails'))) or contains (.,'akzeptieren') or contains (.,'Akzeptieren')]"));
+          clickOrEvaluateAndClick(
+            "//button[contains(.,'OK') or (contains(.,'Alle') and not(contains(., 'Alle Preisdetails'))) or contains (.,'akzeptieren') or contains (.,'Akzeptieren')]");
           threadLocalCookieAccepted.set(true);
           LOG.info("cookies accepted");
         }
@@ -377,17 +432,21 @@ public class BasePage {
 
   public void closeTab(int tabIndex) {
     if (Hook.browser.equals("safari") && Hook.platform.equals("ios-webApp")) {
-      iosBasicPage = iosBasicPage == null ? new IosBasicPage((IOSDriver) threadLocalDriverBasePage.get()) : iosBasicPage;
+      iosBasicPage =
+        iosBasicPage == null ? new IosBasicPage((IOSDriver) threadLocalDriverBasePage.get())
+          : iosBasicPage;
       iosBasicPage.switchContext("native");
       iosBasicPage.closeTabAtIndex(tabIndex);
       iosBasicPage.switchContext("webview");
     } else {
-      ArrayList<String> activeTabs = new ArrayList<>(threadLocalDriverBasePage.get().getWindowHandles());
+      ArrayList<String> activeTabs = new ArrayList<>(
+        threadLocalDriverBasePage.get().getWindowHandles());
       threadLocalDriverBasePage.get().switchTo().window(activeTabs.get(tabIndex)).close();
     }
   }
 
   public class ScrollBuilder {
+
     private final String elementXpath;
     private Directions direction;
     private String script;
@@ -409,7 +468,8 @@ public class BasePage {
         default:
           LOG.info("Directions supported available are: {}, {}", Directions.TOP, Directions.BOTTOM);
           LOG.info("Other directions will be developed in need. Thanks for using!");
-          throw new CucumberException(String.format("Direction is not supported in this version: [%s]", direction));
+          throw new CucumberException(
+            String.format("Direction is not supported in this version: [%s]", direction));
       }
       return this;
     }
@@ -420,7 +480,9 @@ public class BasePage {
     }
 
     public void perform() {
-      Assert.assertTrue(String.format("Wrong number of loop: [%s]. Please pass the integer value greater than 0!", this.loopCount), this.loopCount > 0);
+      Assert.assertTrue(
+        String.format("Wrong number of loop: [%s]. Please pass the integer value greater than 0!",
+          this.loopCount), this.loopCount > 0);
       for (int loop = 0; loop < this.loopCount; loop++) {
         executeJs(script, waitForVisibilityOfElementLocated(By.xpath(this.elementXpath)));
         LOG.info("User scrolls to {} the {} time(s)", this.direction, loop + 1);
@@ -435,9 +497,10 @@ public class BasePage {
   }
 
   public void scrollElementToCenter(WebElement e) {
-    String scrollElementIntoMiddle = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
-      + "var elementTop = arguments[0].getBoundingClientRect().top;"
-      + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
+    String scrollElementIntoMiddle =
+      "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
+        + "var elementTop = arguments[0].getBoundingClientRect().top;"
+        + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 
     threadLocalDriverBasePage.get().executeScript(scrollElementIntoMiddle, e);
     waitFor(500).milliseconds();
@@ -446,8 +509,10 @@ public class BasePage {
   public void waitForSpinnerPaypal() {
     try {
       LOG.info("checking for Loading Spinner");
-      WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(10), Duration.ofMillis(1000));
-      wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(@class,'spinnerWithLockIcon')]")));
+      WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+        Duration.ofSeconds(10), Duration.ofMillis(1000));
+      wait.until(ExpectedConditions.invisibilityOfElementLocated(
+        By.xpath("//*[contains(@class,'spinnerWithLockIcon')]")));
     } catch (Exception ignored) {
     }
   }
@@ -501,7 +566,9 @@ public class BasePage {
       waitForVisibilityOfElementLocated(By.xpath(selector), 5);
       scrollToTop();
       waitForVisibilityOfElementLocated(By.xpath(selector), 5);
-      throw new CucumberException(String.format("Current page contains an element with text \"%s\". Not present expected.", selector));
+      throw new CucumberException(
+        String.format("Current page contains an element with text \"%s\". Not present expected.",
+          selector));
     } catch (NoSuchElementException | TimeoutException e) {
       LOG.info("Current page does not contain an element with text \"{}\" as expected.", selector);
     }
@@ -514,7 +581,8 @@ public class BasePage {
     scrollToBottom(200);
     String pageContent = getTextOfElement(By.xpath("//body"));
     LOG.info("Page content is {}", pageContent);
-    Assert.assertTrue(String.format("Current page does not contains text %s as expected", text), pageContent.contains(text));
+    Assert.assertTrue(String.format("Current page does not contains text %s as expected", text),
+      pageContent.contains(text));
     LOG.info("Current page contains text \"{}\".", text);
   }
 
@@ -522,12 +590,15 @@ public class BasePage {
     if (text.startsWith("@TD:")) {
       text = TestDataLoader.getTestData(text);
     }
-    return String.format("//*[text()='%s' or contains(text(), '%s')]|//p[contains(.,'%s')]", text, text, text);
+    return String.format("//*[text()='%s' or contains(text(), '%s')]|//p[contains(.,'%s')]", text,
+      text, text);
   }
 
   public void elementHasAttribute(String selector, String attribute) {
     WebElement element = waitForVisibilityOfElementLocated(By.xpath(selector));
-    Assert.assertNotNull(String.format("Element with locator \"%s\" does not have attribute \"%s\". Please recheck!", selector, attribute), element.getAttribute(attribute));
+    Assert.assertNotNull(
+      String.format("Element with locator \"%s\" does not have attribute \"%s\". Please recheck!",
+        selector, attribute), element.getAttribute(attribute));
   }
 
   public boolean elementsIsDisplayed(String selector) {
@@ -544,7 +615,9 @@ public class BasePage {
 
   public void elementHasNotAttribute(String selector, String attribute) {
     WebElement element = waitForVisibilityOfElementLocated(By.xpath(selector));
-    Assert.assertNull(String.format("Element \"%s\" still has \"%s\" attribute.", selector, attribute), element.getAttribute(attribute));
+    Assert.assertNull(
+      String.format("Element \"%s\" still has \"%s\" attribute.", selector, attribute),
+      element.getAttribute(attribute));
   }
 
   public void buttonIsEnabled(String buttonText) {
@@ -586,7 +659,9 @@ public class BasePage {
     waitForPageLoaded();
     expectedUrl = TestDataLoader.getTestData(expectedUrl);
     String actual = threadLocalDriverBasePage.get().getCurrentUrl();
-    Assert.assertEquals(String.format("Current Url: [%s] is not expected [%s]", actual, expectedUrl), expectedUrl, actual);
+    Assert.assertEquals(
+      String.format("Current Url: [%s] is not expected [%s]", actual, expectedUrl), expectedUrl,
+      actual);
   }
 
   public void checkIsVisibleByXpath(String selector) {
@@ -617,7 +692,8 @@ public class BasePage {
   }
 
   public void setCssValueToHtmlElement(String HTMLTag, String CSSProp, String newValue) {
-    String jsStringToEval = String.format("document.querySelector('%s').style.%s = '%s';", HTMLTag, CSSProp, newValue);
+    String jsStringToEval = String.format("document.querySelector('%s').style.%s = '%s';", HTMLTag,
+      CSSProp, newValue);
     executeJs(jsStringToEval);
   }
 
@@ -644,6 +720,7 @@ public class BasePage {
   }
 
   public class WaitBuilder {
+
     private final int duration;
 
     public WaitBuilder(int duration) {
@@ -692,7 +769,8 @@ public class BasePage {
   }
 
   public void scrollToBottom() {
-    executeJs("window.scrollTo(0,document.body.scrollHeight || document.documentElement.scrollHeight)");
+    executeJs(
+      "window.scrollTo(0,document.body.scrollHeight || document.documentElement.scrollHeight)");
     waitFor(500).milliseconds();
   }
 
@@ -709,7 +787,9 @@ public class BasePage {
     while (matcher.find()) {
       price = matcher.group(0);
     }
-    if (price.equals("")) price = stringWithPrice;
+    if (price.equals("")) {
+      price = stringWithPrice;
+    }
     return price;
   }
 
@@ -727,7 +807,8 @@ public class BasePage {
     return StringUtils.chop(currentTimeInGermany);
   }
 
-  public List<String> getStringListOfElementVia(By locator, String valueType, String attributeOrCssValue) {
+  public List<String> getStringListOfElementVia(By locator, String valueType,
+    String attributeOrCssValue) {
     waitForSpinnerSF(1);
     waitForPageLoaded();
     try {
@@ -757,17 +838,20 @@ public class BasePage {
   }
 
   public WebElement waitForVisibilityOfElementLocated(By by, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
   }
 
   public WebElement waitForVisibilityOfElementLocated(By by, int timeout, int interval) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout), Duration.ofMillis(interval));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout), Duration.ofMillis(interval));
     return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
   }
 
   public List<WebElement> waitForVisibilityOfAllElementsLocated(By by, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by));
   }
 
@@ -791,14 +875,16 @@ public class BasePage {
   }
 
   public Long getDocumentScrollHeight() {
-    return (Long) threadLocalDriverBasePage.get().executeScript("return document.documentElement.scrollHeight");
+    return (Long) threadLocalDriverBasePage.get()
+      .executeScript("return document.documentElement.scrollHeight");
   }
 
   public void refresh() {
     threadLocalDriverBasePage.get().navigate().refresh();
     try {
       // wait for the alert to exist, then handle it and continue with refresh
-      WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(5));
+      WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+        Duration.ofSeconds(5));
       wait.until(ExpectedConditions.alertIsPresent());
       threadLocalDriverBasePage.get().switchTo().alert().accept();
       threadLocalDriverBasePage.get().switchTo().parentFrame();
@@ -886,43 +972,26 @@ public class BasePage {
     LOG.info("Zoomed {} ", percent);
   }
 
-  public int getIndexOfColumnHavingNameInPage(String columnName, Class<?> page) {
-    int index = -1;
-    if (SfReportsMainPage.class.equals(page)) {
-      String indexLocator = String.format("//table[@class='data-grid-table data-grid-full-table']//*[text()='%s']//ancestor::th", columnName);
-      WebElement element = waitForPresenceOfElementLocated(By.xpath(indexLocator));
-      index = Integer.parseInt(element.getAttribute("data-column-index"));
-    } else if (PartnerPortalContractPage.class.equals(page)) {
-      String allTableHeadColumn = "//table[@aria-label='View Contracts']//thead//th";
-      List<String> allTableHeadColumnName = getStringListOfElementVia(By.xpath(allTableHeadColumn), "text", null);
-      for (int loopIndex = 0; loopIndex < allTableHeadColumnName.size(); loopIndex++) {
-        if (allTableHeadColumnName.get(loopIndex).contains(columnName)) {
-          index = loopIndex + 1;
-          break;
-        }
-      }
-      if (index == -1) throw new CucumberException("Not found the column " + columnName);
-    } else {
-      throw new CucumberException("Page not found");
-    }
-    LOG.info("Index of column {} is {}", columnName, index);
-    return index;
-  }
-
   public void defineTableInformation(String context, String tableName) {
     tableInformation.defineTable(context, tableName);
   }
 
   public void setIndexOfColumnsAreDisplayedInTable() {
     try {
-      waitForVisibilityOfElementLocated(By.xpath(TestDataLoader.getTestData("@TD:listColumnLocator")), 5);
+      waitForVisibilityOfElementLocated(
+        By.xpath(TestDataLoader.getTestData("@TD:listColumnLocator")), 5);
     } catch (TimeoutException e) {
       if (Boolean.parseBoolean(TestDataLoader.getTestData("@TD:isTableLocatedInsideElement"))) {
-        scrollInsideElement("//flexipage-record-home-scrollable-column[contains(@id,'middleColumn')]").to(Directions.BOTTOM).withLoop(2).perform();
-      } else scrollToBottom(200);
+        scrollInsideElement(
+          "//flexipage-record-home-scrollable-column[contains(@id,'middleColumn')]").to(
+          Directions.BOTTOM).withLoop(2).perform();
+      } else {
+        scrollToBottom(200);
+      }
     }
     int index = 0;
-    List<WebElement> allTableColumns = waitForPresenceOfElementsLocated(By.xpath(TestDataLoader.getTestData("@TD:listColumnLocator")));
+    List<WebElement> allTableColumns = waitForPresenceOfElementsLocated(
+      By.xpath(TestDataLoader.getTestData("@TD:listColumnLocator")));
     for (WebElement element : allTableColumns) {
       index++;
       LOG.info("Index of column {} is {}", element.getText(), index);
@@ -934,7 +1003,8 @@ public class BasePage {
   public int getIndexOfRowInTableHasValue(String rowValue) {
     rowValue = TestDataLoader.getTestData(rowValue);
     int index = 0;
-    List<WebElement> allTableRows = waitForPresenceOfElementsLocated(By.xpath(TestDataLoader.getTestData("@TD:listRowLocator")));
+    List<WebElement> allTableRows = waitForPresenceOfElementsLocated(
+      By.xpath(TestDataLoader.getTestData("@TD:listRowLocator")));
     TestDataLoader.setTestData("isRowValuePresent", "false");
     for (WebElement element : allTableRows) {
       index++;
@@ -950,10 +1020,15 @@ public class BasePage {
 
   public String getCellValue(int columnIndex, int rowIndex, String expectedResult) {
     String result;
-    String baseSelector = String.format(TestDataLoader.getTestData("@TD:cellValueLocator"), rowIndex, columnIndex);
-    if (expectedResult.equalsIgnoreCase("checked") || expectedResult.equalsIgnoreCase("unchecked")) {
-      if (isCheckboxChecked(String.format(TestDataLoader.getTestData("@TD:cellValueLocator"), rowIndex, columnIndex), TestDataLoader.getTestData("@TD:checkboxTagAttribute"),
-        TestDataLoader.getTestData("@TD:checkboxAttributeActiveValue"), TestDataLoader.getTestData("@TD:checkboxAttributeInactiveValue"))) {
+    String baseSelector = String.format(TestDataLoader.getTestData("@TD:cellValueLocator"),
+      rowIndex, columnIndex);
+    if (expectedResult.equalsIgnoreCase("checked") || expectedResult.equalsIgnoreCase(
+      "unchecked")) {
+      if (isCheckboxChecked(
+        String.format(TestDataLoader.getTestData("@TD:cellValueLocator"), rowIndex, columnIndex),
+        TestDataLoader.getTestData("@TD:checkboxTagAttribute"),
+        TestDataLoader.getTestData("@TD:checkboxAttributeActiveValue"),
+        TestDataLoader.getTestData("@TD:checkboxAttributeInactiveValue"))) {
         LOG.info("Cell value is: checked");
         return "checked";
       } else {
@@ -961,21 +1036,28 @@ public class BasePage {
         return "unchecked";
       }
     }
-    if (expectedResult.equalsIgnoreCase("empty"))
-      result = waitForPresenceOfElementLocated(By.xpath(String.format(baseSelector, rowIndex, columnIndex))).getAttribute("innerText");
-    else {
-      result = threadLocalDriverBasePage.get().findElement(By.xpath(String.format(baseSelector, rowIndex, columnIndex))).getAttribute("innerText");
+    if (expectedResult.equalsIgnoreCase("empty")) {
+      result = waitForPresenceOfElementLocated(
+        By.xpath(String.format(baseSelector, rowIndex, columnIndex))).getAttribute("innerText");
+    } else {
+      result = threadLocalDriverBasePage.get()
+        .findElement(By.xpath(String.format(baseSelector, rowIndex, columnIndex)))
+        .getAttribute("innerText");
     }
     LOG.info("Cell value is: \"{}\"", result);
     if (expectedResult.equalsIgnoreCase("empty") || expectedResult.equalsIgnoreCase("not empty")) {
       String cellValue = result.replaceAll("(?m)^\\s+$", "");
-      if (cellValue.isEmpty()) return "empty";
-      else return "not empty";
+      if (cellValue.isEmpty()) {
+        return "empty";
+      } else {
+        return "not empty";
+      }
     }
     return result;
   }
 
-  public boolean isCheckboxChecked(String locator, String tagAttribute, String activeValue, String inactiveValue) {
+  public boolean isCheckboxChecked(String locator, String tagAttribute, String activeValue,
+    String inactiveValue) {
     WebElement element = verifyVisibilityOfElement(locator, locator);
     if (tagAttribute.isBlank() && activeValue.isBlank() && inactiveValue.isBlank()) {
       return element.isSelected();
@@ -987,31 +1069,22 @@ public class BasePage {
       } else if (activeValue == null && inactiveValue != null) {
         return (!actualAttributeValue.equalsIgnoreCase(inactiveValue));
       } else if (activeValue != null) {
-        return actualAttributeValue.contains(activeValue) && !actualAttributeValue.contains(inactiveValue);
+        return actualAttributeValue.contains(activeValue) && !actualAttributeValue.contains(
+          inactiveValue);
       } else {
-        throw new CucumberException("Active value and inactive value can not be null at the same time");
+        throw new CucumberException(
+          "Active value and inactive value can not be null at the same time");
       }
     }
   }
 
-  public int getIndexOfColumnHavingValueInPage(String value, Class page) {
-    int index;
-    if (SfReportsMainPage.class.equals(page)) {
-      String indexLocator = String.format("//table[@class='data-grid-table data-grid-full-table']//*[@data-id='%s' or text()='%s']/ancestor::td", value, value);
-      WebElement element = waitForPresenceOfElementLocated(By.xpath(indexLocator));
-      index = Integer.parseInt(element.getAttribute("data-column-index"));
-    } else {
-      throw new CucumberException("Page not found");
-    }
-    LOG.info("Index of column {} is {}", value, index);
-    return index;
-  }
 
   public ConvertTimeZoneBuilder convertDateTime(String dateTimeInString) {
     return new ConvertTimeZoneBuilder(dateTimeInString);
   }
 
   public static class ConvertTimeZoneBuilder {
+
     private final String dateTimeInString;
     private String expectedTimeZone;
     private String expectedFormat;
@@ -1076,86 +1149,6 @@ public class BasePage {
     LOG.info("Hovering over \"{}\" link ", locatorName);
   }
 
-  public void verifyItemHasCorrectPrices(List<Map<String, String>> itemRows) {
-    for (Map<String, String> itemRow : itemRows) {
-      Map<String, String> itemInfo = new HashMap<>(itemRow);
-      String itemName = TestDataLoader.getTestData(itemInfo.remove("item"));
-      try {
-        waitForVisibilityOfElementLocated(By.xpath("//*[text()='Monate 1 - 6']"), 5);
-        TestDataLoader.setTestData("isFirst6MonthsPriceColumnPresent", "True");
-      } catch (TimeoutException e) {
-        TestDataLoader.setTestData("isFirst6MonthsPriceColumnPresent", "False");
-      }
-      verifyPrices(itemInfo, itemName);
-    }
-  }
-
-  public void verifyPrices(Map<String, String> itemRow, String itemName) {
-    LOG.info("----- Verifying price of \"{}\" -----", itemName);
-    for (Map.Entry<String, String> itemInfo : itemRow.entrySet()) {
-      String infoKey = itemInfo.getKey().toLowerCase();
-      String infoValue = itemInfo.getValue() == null ? "" : TestDataLoader.getTestData(itemInfo.getValue());
-      LOG.info("\"{}\" --- {}", itemName, infoKey);
-      String xpathToItemElement = getItemElementInPriceSection(infoKey, itemName);
-      if (infoValue.isEmpty()) {
-        waitForInvisibilityOfElementLocated(By.xpath(xpathToItemElement), 5);
-        LOG.info("There's no {} of {} as expected", infoKey, itemName);
-      } else {
-        if (infoKey.contains("origin")) {
-          String strikeThroughStyle = waitForVisibilityOfElementLocated(By.xpath(xpathToItemElement)).getCssValue("text-decoration");
-          Assert.assertTrue(String.format("Actual %s of %s is not strike-through", infoKey, itemName), strikeThroughStyle.contains("line-through"));
-          LOG.info("The actual {} of {} is strike-through", infoKey, itemName);
-        }
-        Assert.assertEquals(infoValue, getTextOfElement(By.xpath(xpathToItemElement)).trim());
-        LOG.info("Actual {} of {} is same as expected", infoKey, itemName);
-      }
-    }
-  }
-
-  private String getItemElementInPriceSection(String info, String itemName) {
-    //define general xpath to item info
-    Map<String, String> generalItemXpathList = new HashMap<>();
-    generalItemXpathList.put("origin in-contract 1-6 months price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')])[1]");
-    generalItemXpathList.put("in-contract 1-6 months price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[@class='c-text-body'])[1]");
-    generalItemXpathList.put("origin in-contract price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')])[2]");
-    generalItemXpathList.put("in-contract price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[@class='c-text-body'])[2]");
-    generalItemXpathList.put("origin out-of-contract price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')])[3]");
-    generalItemXpathList.put("out-of-contract price", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//*[self::span[@class='c-text-body'] or self::div[@data-testid='text']])[3]");
-    generalItemXpathList.put("origin in-contract price (no 6 months price column)", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')])[1]");
-    generalItemXpathList.put("in-contract price (no 6 months price column)", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[@class='c-text-body'])[1]");
-    generalItemXpathList.put("origin out-of-contract price (no 6 months price column)", "(//section//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')])[2]");
-    generalItemXpathList.put("out-of-contract price (no 6 months price column)", "(//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//*[self::span[@class='c-text-body'] or self::div[@data-testid='text']])[2]");
-    generalItemXpathList.put("item description", "//tr[.//text()='%s']//following-sibling::tr[2]//div[@data-testid='text' and not(contains(@class,'text-bold'))]");
-    generalItemXpathList.put("origin one-time price", "//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[contains(@class,'smallprint')]");
-    generalItemXpathList.put("one-time price", "//tr[contains(normalize-space(),'%s')]/following-sibling::tr[1]//span[@class='c-text-body']");
-    generalItemXpathList.put("origin one-time price servicepauschale", "//tr[.//text()='%s']/following-sibling::tr[contains(normalize-space(),'Servicepauschale')]//span[contains(@class,'c-text-smallprint')]");
-    generalItemXpathList.put("one-time price servicepauschale", "//tr[.//text()='%s']/following-sibling::tr[contains(normalize-space(),'Servicepauschale')]//span[@class='c-text-body']");
-    generalItemXpathList.put("item description servicepauschale", "//tr[.//text()='%s']/following-sibling::tr[contains(normalize-space(),'Servicepauschale')]//following-sibling::tr[1]//div[@data-testid='text' and not(contains(@class,'text-bold'))]");
-    generalItemXpathList.put("upsell status", "//tr[contains(normalize-space(),'%s')]/preceding-sibling::tr[1]//div[contains(@data-testid,'text') and not(contains(@class,'u-margin-x-tiny'))]");
-    generalItemXpathList.put("section", "(//tr[contains(normalize-space(),'%s')]/preceding-sibling::tr//div[contains(@class,'u-margin-x-tiny')])[last()]");
-    String isFirst6MonthsPriceColumnPresent = TestDataLoader.getTestData("@TD:isFirst6MonthsPriceColumnPresent");
-    String xpathToItemElement;
-    if (info.contains("price") && !info.contains("one-time"))
-      xpathToItemElement = isFirst6MonthsPriceColumnPresent.equals("False") ? String.format(generalItemXpathList.get(info + " (no 6 months price column)"), itemName) : String.format(generalItemXpathList.get(info), itemName);
-    else
-      xpathToItemElement = String.format(generalItemXpathList.get(info), itemName);
-    if (itemName.contains("Servicepauschale")) {
-      itemName = itemName.split(" Servicepauschale")[0];
-      xpathToItemElement = String.format(generalItemXpathList.get(info + " servicepauschale"), itemName);
-    }
-    if (itemName.contains("total ")) {
-      String displayedItemName = itemName.equals("total monthly price") ? "Monat\u00ADliche\u00A0Gesamt\u00ADkosten" : "Einmalige Gesamtkosten";
-      xpathToItemElement = xpathToItemElement.replace(itemName, displayedItemName).replace("span[@class='c-text-body']", "div[@data-testid='text']");
-    }
-    LOG.info("Locator: {}", xpathToItemElement);
-    return xpathToItemElement;
-  }
-
-  //Get the channel image name in html
-  public String getChannelImgName(String channel) {
-    return channelImgName.get(channel);
-  }
-
   public List<String> convertToTestDataWithNoSpecialChar(List<String> contentList) {
     List<String> newContentList = new ArrayList<>();
     for (String value : contentList) {
@@ -1170,35 +1163,12 @@ public class BasePage {
       if (emailContent.contains("|")) {
         String[] expectedText = emailContent.split(" \\| ");
         newContentList.addAll(Arrays.asList(expectedText));
-      } else newContentList.add(emailContent);
-    } else newContentList.add(value);
-  }
-
-  public void sortSalesforcetableColumn(String sortCriteria, String sortOrder) {
-    // sort order must be "Descending" or "Ascending"
-    Assert.assertTrue("sortOrder must be {Descending,Ascending}", sortOrder.equals("Descending") || sortOrder.equals("Ascending"));
-    String sortXpath = String.format("//span[@title='%s']/ancestor::a//following-sibling::span[@aria-live='assertive']", sortCriteria);
-    String columnNameLocator = String.format("(//span[@title='%s'])[last()]", sortCriteria);
-    String currentSortOrder = waitForVisibilityOfElementLocated(By.xpath(sortXpath)).getText();
-    if (currentSortOrder.isEmpty()) {
-      clickOrEvaluateAndClick(columnNameLocator);
-      waitForSpinnerSF(1);
-      currentSortOrder = waitForVisibilityOfElementLocated(By.xpath(sortXpath)).getText();
+      } else {
+        newContentList.add(emailContent);
+      }
+    } else {
+      newContentList.add(value);
     }
-    LOG.info("Current sort Order is : {}", currentSortOrder);
-    if (!currentSortOrder.contains(sortOrder)) {
-      clickOrEvaluateAndClick(columnNameLocator);
-      waitForSpinnerSF(1);
-      LOG.info("Sorted {} as {} successfully", sortCriteria, sortOrder);
-    }
-  }
-
-  public void verifyLengthOfElementText(String elementName, By locator, String length) {
-    String elementText = getTextOfElement(locator).trim();
-    int actualElementTextLength = elementText.length();
-    TestDataLoader.setTestData(elementName.replace(" ", "_"), elementText);
-    Assert.assertEquals(Integer.parseInt(length), actualElementTextLength);
-    LOG.info("Element \"{}\" has text length \"{}\" as expected \"{}\"", elementName, actualElementTextLength, length);
   }
 
   public static String getValueMatchRegexFromString(String regex, String string) {
@@ -1211,19 +1181,24 @@ public class BasePage {
         break;
       }
     }
-    LOG.info("The value matching with the regex '{}' from string '{}' is:\n'{}'", regex, string, matchingValue);
+    LOG.info("The value matching with the regex '{}' from string '{}' is:\n'{}'", regex, string,
+      matchingValue);
     return matchingValue;
   }
 
-  public void selectValueFromDropDownList(String valueToSelect, String list, String dropdownListXpath) {
+  public void selectValueFromDropDownList(String valueToSelect, String list,
+    String dropdownListXpath) {
     valueToSelect = TestDataLoader.getTestData(valueToSelect);
-    String selector = "//*[@role='presentation' or @role='menuitem' or @role='option']//*[text()='" + valueToSelect + "']";
+    String selector =
+      "//*[@role='presentation' or @role='menuitem' or @role='option']//*[text()='" + valueToSelect
+        + "']";
     clickOrEvaluateAndClick(dropdownListXpath);
     clickOrEvaluateAndClick(selector);
     LOG.info("Selected value {} --- from dropdown list -----{}", valueToSelect, list);
   }
 
-  public void verifyInformationHasTestDataLoader(String informationType, List<String> informationList) {
+  public void verifyInformationHasTestDataLoader(String informationType,
+    List<String> informationList) {
     String keyword;
     String value;
     List<String> expectedResult = new ArrayList<>();
@@ -1234,7 +1209,9 @@ public class BasePage {
         value = TestDataLoader.getTestData(keyword);
         newData = data.replace(keyword, value);
         expectedResult.add(newData);
-      } else expectedResult.add(data);
+      } else {
+        expectedResult.add(data);
+      }
       waitForPageLoaded();
       scrollToBottom(200);
       String pageContent = getTextOfElement(By.xpath("//body[@class='desktop']"));
@@ -1253,14 +1230,18 @@ public class BasePage {
     LOG.info("Page content is {}", pageContent);
     for (String info : informationList) {
       try {
-        Assert.assertTrue(String.format("The page content does not contains: %s", info), pageContent.toString().contains(info));
+        Assert.assertTrue(String.format("The page content does not contains: %s", info),
+          pageContent.toString().contains(info));
         LOG.info("This \"{}\" {} displays as expected", info, informationType);
       } catch (AssertionError e) {
-        LOG.info("This \"{}\" {} is NOT displays as expected. Trying to scroll down and verify again", info, informationType);
+        LOG.info(
+          "This \"{}\" {} is NOT displays as expected. Trying to scroll down and verify again",
+          info, informationType);
         scrollToBottom(200);
         waitForPageLoaded();
         pageContent = new StringBuilder(getTextOfElement(By.xpath("//body")));
-        Assert.assertTrue(String.format("The page content does not contains: %s", info), pageContent.toString().contains(info));
+        Assert.assertTrue(String.format("The page content does not contains: %s", info),
+          pageContent.toString().contains(info));
       }
     }
   }
@@ -1277,30 +1258,36 @@ public class BasePage {
     });
   }
 
-  public void verifyInformationNotDisplayedInSFTab(String informationType, List<String> informationList) {
+  public void verifyInformationNotDisplayedInSFTab(String informationType,
+    List<String> informationList) {
     informationList = convertToTestDataWithNoSpecialChar(informationList);
     waitForPageLoaded();
     scrollToBottom();
     String pageContent = getTextOfElement(By.xpath("//div[contains(@class,'active lafPageHost')]"));
     LOG.info("Page content is {}", pageContent);
     informationList.forEach(info -> {
-      Assert.assertFalse(String.format("%s %s is displayed!", informationType, info), pageContent.contains(info));
+      Assert.assertFalse(String.format("%s %s is displayed!", informationType, info),
+        pageContent.contains(info));
       LOG.info("This \"{}\" {} does not displays as expected", info, informationType);
     });
   }
 
-  public void verifyInformationDisplayedInSFTab(String informationType, List<String> informationList) {
+  public void verifyInformationDisplayedInSFTab(String informationType,
+    List<String> informationList) {
     informationList = convertToTestDataWithNoSpecialChar(informationList);
     waitForSpinnerSF(1);
     waitForPageLoaded();
     String pageContent;
     if (informationType.equalsIgnoreCase("email content")) {
-      threadLocalDriverBasePage.get().switchTo().frame(waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='CK Editor Container']")));
-      threadLocalDriverBasePage.get().switchTo().frame(waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='Email Body']")));
+      threadLocalDriverBasePage.get().switchTo().frame(
+        waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='CK Editor Container']")));
+      threadLocalDriverBasePage.get().switchTo()
+        .frame(waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='Email Body']")));
       pageContent = getTextOfElement(By.xpath("//body[@contenteditable='true']"));
       threadLocalDriverBasePage.get().switchTo().defaultContent();
-    } else
+    } else {
       pageContent = getTextOfElement(By.xpath("//div[contains(@class,' active lafPageHost')]"));
+    }
     LOG.info("Page content is {}", pageContent);
     for (String info : informationList) {
       try {
@@ -1309,7 +1296,8 @@ public class BasePage {
       } catch (AssertionError e) {
         scrollToBottom();
         pageContent = getTextOfElement(By.xpath("//div[contains(@class,'active lafPageHost')]"));
-        Assert.assertTrue(String.format("%s %s is not displayed!", informationType, info), pageContent.contains(info));
+        Assert.assertTrue(String.format("%s %s is not displayed!", informationType, info),
+          pageContent.contains(info));
         LOG.info("This \"{}\" {} displays as expected", info, informationType);
       }
     }
@@ -1324,12 +1312,15 @@ public class BasePage {
       userId = "109554844183465";
     }
     if (Hook.testedEnv.equalsIgnoreCase("uat")) {
-      if (username.contains("SkyService"))
+      if (username.contains("SkyService")) {
         userId = TestDataLoader.getTestData("TD:chatBotId_SkyService");
-      else
+      } else {
         userId = TestDataLoader.getTestData("TD:chatBotId_NonSkyService");
+      }
     }
-    Assert.assertNotNull(String.format("Cannot get user id of the %s in %s environment", username, Hook.testedEnv), userId);
+    Assert.assertNotNull(
+      String.format("Cannot get user id of the %s in %s environment", username, Hook.testedEnv),
+      userId);
     return userId;
   }
 
@@ -1350,51 +1341,39 @@ public class BasePage {
   public void createCtiCaseForCustomer(String accountId, String callReason) {
     String customerID = TestDataLoader.getTestData(accountId);
     String callId = generateRandomWord(13);
-    String ctiUrl = "https://skyde--uat--c.visualforce.com/flow/CTI_Flow_For_Softphone_Integration?extID=" + customerID + "&reasonForCall=" + callReason + "&CallID=" + callId;
+    String ctiUrl =
+      "https://skyde--uat--c.visualforce.com/flow/CTI_Flow_For_Softphone_Integration?extID="
+        + customerID + "&reasonForCall=" + callReason + "&CallID=" + callId;
     threadLocalDriverBasePage.get().get(ctiUrl);
     waitForPageLoaded();
     waitForSpinnerCDP(1);
     LOG.info("Navigate to create CTI case url: {}", ctiUrl);
     clickButtonByText("Next");
     waitForSpinnerCDP(1);
-    verifyVisibilityOfElement("Case detail", "//*[contains(@class,'entityNameTitle') and text()='Case']");
+    verifyVisibilityOfElement("Case detail",
+      "//*[contains(@class,'entityNameTitle') and text()='Case']");
     LOG.info("Case detail page is displayed");
   }
 
   public void verifyPageTitle(String pageTitle) {
-    Assert.assertTrue(String.format("The title [%s] is not matched with current: [%s]", pageTitle,threadLocalDriverBasePage.get().getTitle()), waitForPageTitleToContain(pageTitle, 30));
+    Assert.assertTrue(String.format("The title [%s] is not matched with current: [%s]", pageTitle,
+      threadLocalDriverBasePage.get().getTitle()), waitForPageTitleToContain(pageTitle, 30));
     LOG.info("\"{}\" page title is verified", pageTitle);
   }
 
-  public int sortColumnAndReturnColumnIndex(String columnName, String sortDirection, Class<?> page) {
-    Assert.assertTrue("Invalid sort direction!", sortDirection.equals("ascending") || sortDirection.equals("descending"));
-    String columnXpath = null;
-    int columnIndex = 0, retry = 0;
-    if (page.equals(PartnerPortalContractPage.class)) {
-      columnIndex = getIndexOfColumnHavingNameInPage(columnName, PartnerPortalContractPage.class);
-      columnXpath = String.format("//table[@aria-label='View Contracts']//thead//th[%s]", columnIndex);
-    }
-    Assert.assertNotNull(columnXpath);
-    while (!getTextOfElement(By.xpath(columnXpath)).toLowerCase().contains(sortDirection) && retry < 10) {
-      clickOrEvaluateAndClick(columnXpath);
-      waitForPageLoaded();
-      retry++;
-    }
-    if (retry >= 10) throw new CucumberException("Can not sort the column " + columnName + " " + sortDirection);
-    else LOG.info("Sort column {} {} successfully", columnName, sortDirection);
-    return columnIndex;
-  }
 
   public void switchToTabX(Integer tab) {
     if (Hook.browser.equals("safari") && Hook.platform.equals("ios-webApp")) {
-      iosBasicPage = (iosBasicPage == null || DriverUtil.getDriver() != threadLocalDriverBasePage.get()) ? (new IosBasicPage((IOSDriver) DriverUtil.getDriver())) : iosBasicPage;
+      iosBasicPage =
+        (iosBasicPage == null || DriverUtil.getDriver() != threadLocalDriverBasePage.get())
+          ? (new IosBasicPage((IOSDriver) DriverUtil.getDriver())) : iosBasicPage;
       iosBasicPage.switchContext("native");
       iosBasicPage.switchToTabAtIndex(tab);
       iosBasicPage.switchContext("webview");
       ArrayList<String> tabs = new ArrayList<>(threadLocalDriverBasePage.get().getWindowHandles());
       threadLocalDriverBasePage.get().switchTo().window(tabs.get(tab - 1));
       TestDataLoader.setTestData("IosWorkingWindowIndex", String.valueOf(tab));
-      LOG.info("Focused window title is: {}",threadLocalDriverBasePage.get().getTitle());
+      LOG.info("Focused window title is: {}", threadLocalDriverBasePage.get().getTitle());
     } else {
       ArrayList<String> tabs = new ArrayList<>(threadLocalDriverBasePage.get().getWindowHandles());
       for (String singleTab : tabs) {
@@ -1426,50 +1405,75 @@ public class BasePage {
     return status;
   }
 
-  public void verifyFieldWithValueInSalesforce(String fieldName, String comparison, String value, String infoValueXpath) {
+  public void verifyFieldWithValueInSalesforce(String fieldName, String comparison, String value,
+    String infoValueXpath) {
     String actual;
     String attributeType;
-    if (TestDataLoader.getTestData(value).equals("empty") || TestDataLoader.getTestData(value).equals("null")) {
+    if (TestDataLoader.getTestData(value).equals("empty") || TestDataLoader.getTestData(value)
+      .equals("null")) {
       // Deal with empty / null value
       value = "";
       actual = waitForPresenceOfElementLocated(By.xpath(infoValueXpath)).getAttribute("innerText");
     } else {
-      if (fieldName.equalsIgnoreCase("PAYBACK Kartennummer") || fieldName.equalsIgnoreCase("Erworbene PAYBACK-Punkte")) {
+      if (fieldName.equalsIgnoreCase("PAYBACK Kartennummer") || fieldName.equalsIgnoreCase(
+        "Erworbene PAYBACK-Punkte")) {
         attributeType = "value";
-      } else attributeType = "innerText";
+      } else {
+        attributeType = "innerText";
+      }
       // Deal with not empty / not null value
-      actual = waitForVisibilityOfElementLocated(By.xpath(infoValueXpath)).getAttribute(attributeType).replace("\n", " ").replaceAll("\\sOpen\\s.+\\sPreview\\s", "").replaceAll("\\sOpen\\s.+\\sPreview", "");
+      actual = waitForVisibilityOfElementLocated(By.xpath(infoValueXpath)).getAttribute(
+          attributeType).replace("\n", " ").replaceAll("\\sOpen\\s.+\\sPreview\\s", "")
+        .replaceAll("\\sOpen\\s.+\\sPreview", "");
       // Handle date time data
       value = handleDateTimeData(fieldName, value);
     }
     if (comparison.equalsIgnoreCase("is")) {
-      Assert.assertEquals(String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value, actual);
+      Assert.assertEquals(
+        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value,
+        actual);
     } else if (comparison.equalsIgnoreCase("is not")) {
-      Assert.assertNotEquals(String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value, actual);
+      Assert.assertNotEquals(
+        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value,
+        actual);
     } else if (comparison.equalsIgnoreCase("contain")) {
-      Assert.assertTrue(String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), actual.contains(value));
-    } else
+      Assert.assertTrue(
+        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value),
+        actual.contains(value));
+    } else {
       throw new CucumberException("Comparison should be {'is', 'is not'}");
+    }
     LOG.info("The value of \"{}\" {} \"{}\" as expected", fieldName, comparison, value);
   }
 
   public String handleDateTimeData(String fieldName, String value) {
-    List<String> fieldNeedHandleData = Arrays.asList("date of activation", "date of inactivation", "signature date", "created by", "last modified by", "kündigung möglich bis");
+    List<String> fieldNeedHandleData = Arrays.asList("date of activation", "date of inactivation",
+      "signature date", "created by", "last modified by", "kündigung möglich bis");
     if (fieldNeedHandleData.contains(fieldName.toLowerCase())) {
-      String sfUserTimezone = (TestDataLoader.getTestData("@TD:TimeZoneSidKey") == null) ? "Europe/Berlin" : TestDataLoader.getTestData("@TD:TimeZoneSidKey");
+      String sfUserTimezone =
+        (TestDataLoader.getTestData("@TD:TimeZoneSidKey") == null) ? "Europe/Berlin"
+          : TestDataLoader.getTestData("@TD:TimeZoneSidKey");
       String gmtDateTime;
       // Get gmtDateTime by converting value
-      if (fieldName.toLowerCase().contains("date") || fieldName.equalsIgnoreCase("kündigung möglich bis"))
+      if (fieldName.toLowerCase().contains("date") || fieldName.equalsIgnoreCase(
+        "kündigung möglich bis")) {
         gmtDateTime = convertDateTime(TestDataLoader.getTestData(value)).toInstant();
-      else
+      } else {
         gmtDateTime = convertDateTime(TestDataLoader.getTestData(value.split(", ")[1])).toInstant();
+      }
       // Convert gtm datetime value to datetime value in SF user's timezone
-      if (fieldName.equalsIgnoreCase("Date of activation") || fieldName.equalsIgnoreCase("Date of inactivation"))
-        value = convertDateTime(gmtDateTime).toTimeZone(sfUserTimezone).withFormat("dd.MM.yyyy HH:mm").asString();
-      else if (fieldName.equalsIgnoreCase("Signature date") || fieldName.equalsIgnoreCase("kündigung möglich bis"))
-        value = convertDateTime(gmtDateTime).toTimeZone(sfUserTimezone).withFormat("dd.MM.yyyy").asString();
-      else
-        value = TestDataLoader.getTestData(value.split(", ")[0]) + ", " + convertDateTime(gmtDateTime).toTimeZone(sfUserTimezone).withFormat("dd.MM.yyyy HH:mm").asString();
+      if (fieldName.equalsIgnoreCase("Date of activation") || fieldName.equalsIgnoreCase(
+        "Date of inactivation")) {
+        value = convertDateTime(gmtDateTime).toTimeZone(sfUserTimezone)
+          .withFormat("dd.MM.yyyy HH:mm").asString();
+      } else if (fieldName.equalsIgnoreCase("Signature date") || fieldName.equalsIgnoreCase(
+        "kündigung möglich bis")) {
+        value = convertDateTime(gmtDateTime).toTimeZone(sfUserTimezone).withFormat("dd.MM.yyyy")
+          .asString();
+      } else {
+        value = TestDataLoader.getTestData(value.split(", ")[0]) + ", " + convertDateTime(
+          gmtDateTime).toTimeZone(sfUserTimezone).withFormat("dd.MM.yyyy HH:mm").asString();
+      }
     } else {
       value = TestDataLoader.getTestData(value);
     }
@@ -1480,7 +1484,8 @@ public class BasePage {
     if (action.equals("can not")) {
       try {
         waitForElementToBeClickable(By.xpath(checkboxXpath), 2).click();
-        throw new CucumberException("Fail due to checkbox " + checkboxXpath + " is clickable by the user.");
+        throw new CucumberException(
+          "Fail due to checkbox " + checkboxXpath + " is clickable by the user.");
       } catch (TimeoutException | ElementClickInterceptedException e) {
         LOG.info("Checkbox {} is not clickable as expected", checkboxXpath);
       }
@@ -1489,15 +1494,23 @@ public class BasePage {
         waitForElementToBeClickable(By.xpath(checkboxXpath), 2);
         LOG.info("Checkbox {} is clickable as expected", checkboxXpath);
       } catch (TimeoutException e) {
-        throw new CucumberException("Fail due to checkbox " + checkboxXpath + " is not clickable by the user.");
+        throw new CucumberException(
+          "Fail due to checkbox " + checkboxXpath + " is not clickable by the user.");
       }
-    } else throw new CucumberException("Action must be {can or cannot}");
+    } else {
+      throw new CucumberException("Action must be {can or cannot}");
+    }
   }
 
-  public void verifyInformationNotDisplayInSpecificArea(String objectName, Map<String, String> areaXpath, List<String> informationOrElementXpathList, int scrollLoop) {
-    Assert.assertEquals("Area xpath map must contain 2 key-value {area scrollable xpath, area body xpath}", 2, areaXpath.keySet().size());
-    Assert.assertTrue("Area xpath map must contain key {area scrollable xpath", areaXpath.containsKey("area scrollable xpath"));
-    Assert.assertTrue("Area xpath map must contain key {area body xpath}", areaXpath.containsKey("area body xpath"));
+  public void verifyInformationNotDisplayInSpecificArea(String objectName,
+    Map<String, String> areaXpath, List<String> informationOrElementXpathList, int scrollLoop) {
+    Assert.assertEquals(
+      "Area xpath map must contain 2 key-value {area scrollable xpath, area body xpath}", 2,
+      areaXpath.keySet().size());
+    Assert.assertTrue("Area xpath map must contain key {area scrollable xpath",
+      areaXpath.containsKey("area scrollable xpath"));
+    Assert.assertTrue("Area xpath map must contain key {area body xpath}",
+      areaXpath.containsKey("area body xpath"));
     String areaScrollableXpath = areaXpath.get("area scrollable xpath");
     String areaBodyXpath = areaXpath.get("area body xpath");
     //Check if area has scroller or not
@@ -1508,35 +1521,47 @@ public class BasePage {
       LOG.info("The area does not have scroller. Continue...");
     }
     String conversationContent = getTextOfElement(By.xpath(areaBodyXpath));
-    informationOrElementXpathList = convertToTestDataWithNoSpecialChar(informationOrElementXpathList);
+    informationOrElementXpathList = convertToTestDataWithNoSpecialChar(
+      informationOrElementXpathList);
     if (objectName.contains("information")) {
       informationOrElementXpathList.forEach(element -> {
-        Assert.assertFalse("Content in area located by " + areaBodyXpath + " contain information " + element, conversationContent.contains(element));
-        LOG.info("Content in area {} does not contain information {} as expectation", areaBodyXpath, element);
+        Assert.assertFalse(
+          "Content in area located by " + areaBodyXpath + " contain information " + element,
+          conversationContent.contains(element));
+        LOG.info("Content in area {} does not contain information {} as expectation", areaBodyXpath,
+          element);
       });
-    } else informationOrElementXpathList.forEach(element -> {
-      waitForInvisibilityOfElementLocated(By.xpath(element), 15);
-      LOG.info("Area located by \"{}\" not have \"{}\" \"{}\" as expectation", areaBodyXpath, objectName, element);
-    });
+    } else {
+      informationOrElementXpathList.forEach(element -> {
+        waitForInvisibilityOfElementLocated(By.xpath(element), 15);
+        LOG.info("Area located by \"{}\" not have \"{}\" \"{}\" as expectation", areaBodyXpath,
+          objectName, element);
+      });
+    }
   }
 
   public void waitForElementToBeSelected(By by, boolean isSelected, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     wait.until(ExpectedConditions.elementSelectionStateToBe(by, isSelected));
   }
 
   public boolean waitForPageTitleToContain(String title, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.titleContains(title));
   }
 
-  public List<WebElement> waitForNumberOfElementsToBePresent(By by, int numberOfElements, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+  public List<WebElement> waitForNumberOfElementsToBePresent(By by, int numberOfElements,
+    int timeout) {
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.numberOfElementsToBe(by, numberOfElements));
   }
 
   public boolean waiForTheUrlToContain(String url, int timeout) {
-    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(), Duration.ofSeconds(timeout));
+    WebDriverWait wait = new WebDriverWait(threadLocalDriverBasePage.get(),
+      Duration.ofSeconds(timeout));
     return wait.until(ExpectedConditions.urlContains(url));
   }
 }
