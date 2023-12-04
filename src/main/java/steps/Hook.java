@@ -1,6 +1,7 @@
 package steps;
 
 import static config.DriverUtil.closeDriver;
+import static config.DriverUtil.getDriver;
 import static config.DriverUtil.threadLocalActiveBrowsers;
 import static config.FilesUtils.saveExecutionGeneralInfoToExcelFile;
 import static config.FilesUtils.updateTestResultsSummaryToExcelFile;
@@ -47,9 +48,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class Hook {
 
   private static final Logger LOG = LogManager.getLogger(Hook.class);
-  public static String browser = System.getProperty("browser");
-  public static String testedEnv = System.getProperty("testedEnv");
-  public static String platform = System.getProperty("platform");
+  public static String browser = "chrome";
+  public static String testedEnv = "uat";
+  public static String platform = "desktop";
   public static AppiumServer appiumServer;
   //    public static int chatIndex;
   public static Date testStartDateTime = new Date();
@@ -67,6 +68,7 @@ public class Hook {
 
   @BeforeAll
   public static void initializeAppiumServer() {
+    System.out.println("==============Before All ===========");
     if (platform.contains("android") || platform.contains("ios")) {
       LOG.info("-------------------------------------------");
       LOG.info("START APPIUM SERVER");
@@ -177,6 +179,12 @@ public class Hook {
       closeDriver();
     }
     LOG.info("-------------------------------------------");
+  }
+
+  @After("@CloseBrowser")
+  public void close(Scenario scen) {
+    System.out.println("==============Close browser ===========");
+    getDriver().quit();
   }
 
   @After(order = 3)
