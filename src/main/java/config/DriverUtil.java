@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.cucumber.core.exception.CucumberException;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -21,18 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.Platform;
@@ -79,9 +74,6 @@ public class DriverUtil {
 
   private DriverUtil() {
   }
-
-  private static Executor executor;
-
   public static RemoteWebDriver getDriver() {
     return threadLocalActiveBrowsers.get().get("current");
   }
@@ -255,7 +247,7 @@ public class DriverUtil {
     chromeOptions.setCapability(LOGGING_PREFS, logPrefsCHROME);
 
          /*
-        Ensure that your chrome browser has proxy enabled.
+        Ensure that your Chrome browser has proxy enabled.
         Settings - Advanced - System : Open your computer proxy settings should be able to open the dialog
          */
     if (proxy) {
@@ -576,23 +568,6 @@ public class DriverUtil {
     LOG.info("Close unused driver successfully!");
   }
 
-  public static int adbCommand(String command) {
-
-    CommandLine cmd = CommandLine.parse(
-      "ssh pascalkallenborn@" + APPIUM_SERVER_LOCAL_HOST + " \"" + command + "\"");
-    LOG.info("used string to connect: {}", cmd);
-
-    DefaultExecutor shell = new DefaultExecutor();
-    int exitValue = 9999;
-    //Delete app cache and data
-    try {
-      exitValue = shell.execute(cmd);
-      return exitValue;
-    } catch (IOException ignored) {
-    }
-    return exitValue;
-  }
-
   public static void initAndroidDriver() {
     String startADB;
     String appiumSettingsStop;
@@ -730,38 +705,6 @@ public class DriverUtil {
     driver = null;
   }
 
-  public static void closeAndroidDriver() {
-    if (getAndroidDriver() == null) {
-      LOG.info("Android driver already closed");
-    } else {
-      try {
-        androidDriver.quit();
-        androidDriver = null;
-      } catch (Exception ignored) {
-      }
-    }
-  }
-
-  public static void closeIosDriver() {
-    if (getIosDriver() == null) {
-      LOG.info("iOS driver already closed");
-    } else {
-      try {
-        iosDriver.close();
-        iosDriver.quit();
-        iosDriver = null;
-      } catch (Exception ignored) {
-      }
-    }
-  }
-
-  public static void clearCache() {
-    threadLocalDriver.get().get("chrome://settings/clearBrowserData");
-    threadLocalDriver.get().switchTo().activeElement();
-    threadLocalDriver.get().findElement(By.cssSelector("* /deep/ #clearBrowsingDataConfirm"))
-      .click();
-  }
-
   public static RemoteWebDriver getBrowser(String browserName) {
     return threadLocalActiveBrowsers.get().get(browserName);
   }
@@ -797,69 +740,6 @@ public class DriverUtil {
   public static void closeBrowser(String browserName) {
     getBrowser(browserName).quit();
     threadLocalActiveBrowsers.get().remove(browserName);
-  }
-
-  public static boolean startAppiumServer() throws IOException {
-    CommandLine cmd = null;
-    CommandLine cmdAPPIUM = null;
-    LOG.info(Hook.platform);
-    if (Hook.platform.equals("android")) {
-      if (System.getProperty("executingEnv").contains("jenkins")) {
-        cmd = CommandLine.parse("appium.cmd -a 127.0.0.1 -p 4723");
-      } else if (System.getProperty("executingEnv").contains("local")) {
-        cmd = CommandLine.parse("appium.cmd -a 0.0.0.0 -p 4723");
-      }
-    } else if (Hook.platform.equals("ios") && (System.getProperty("executingEnv")
-      .contains("jenkins"))) {
-      cmd = CommandLine.parse("appium -a 127.0.0.1 -p 4723");
-    }
-    if (Hook.platform.contains("ssh")) {
-      LOG.info("Appium server already running");
-    } else {
-      LOG.info("running command: {}", cmd);
-      DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
-      ExecuteWatchdog watchdog = new ExecuteWatchdog(60 * 1000L);
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-      PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-      executor = new DefaultExecutor();
-      executor.setStreamHandler(streamHandler);
-      executor.setExitValue(1);
-      executor.setWatchdog(watchdog);
-      executor.execute(cmd, resultHandler);
-      int count = 0;
-      while (!outputStream.toString().contains("Appium REST http interface listener started")) {
-        LOG.info(outputStream.toByteArray());
-        LOG.info("waiting for Appium Server to start ({} second(s))", count);
-        count++;
-        if (count >= 31) {
-          LOG.info("Appium Server could not been started, trying to restart Appium server");
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  public static void closeAppiumServer() {
-    CommandLine cmd = null;
-    if (Hook.platform.contains("android")) {
-      cmd = CommandLine.parse("taskkill /IM node.exe /F");
-    } else if (Hook.platform.contains("ios")) {
-      cmd = CommandLine.parse("pkill -f appium");
-    }
-    DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
-    ExecuteWatchdog watchdog = new ExecuteWatchdog(60 * 1000L);
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-    executor = new DefaultExecutor();
-    executor.setStreamHandler(streamHandler);
-    executor.setExitValue(1);
-    executor.setWatchdog(watchdog);
-    try {
-      executor.execute(cmd, resultHandler);
-    } catch (Exception ignored) {
-    }
-    LOG.info("shutting down appium Server");
   }
 
   public static void getProxyServer() {
