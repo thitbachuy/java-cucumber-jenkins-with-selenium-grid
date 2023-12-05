@@ -1,31 +1,30 @@
 package pages.ios;
 
+import static java.time.Duration.ofMillis;
+
 import config.DriverUtil;
 import config.TestDataLoader;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.ios.IOSDriver;
 import io.cucumber.core.exception.CucumberException;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import steps.Hook;
-
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static java.time.Duration.ofMillis;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import steps.Hook;
 
 public class IosBasicPage {
 
@@ -40,7 +39,7 @@ public class IosBasicPage {
 
   public static int adbCommand(String command) {
     CommandLine cmd = CommandLine.parse(
-        "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
+      "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
     LOG.info("used string to connect: {}", cmd);
     DefaultExecutor shell = new DefaultExecutor();
     int exitValue = 9999;
@@ -76,9 +75,9 @@ public class IosBasicPage {
       LOG.info("need to check for login to cdp");
       try {
         typeTextIntoElementByXpath("//XCUIElementTypeTextField[@value='User Name']",
-            TestDataLoader.getTestData("@TD:cdploginemail"));
+          TestDataLoader.getTestData("@TD:cdploginemail"));
         typeTextIntoElementByXpath("//XCUIElementTypeSecureTextField[@value='Password']",
-            TestDataLoader.getTestData("@TD:cdploginpassword"));
+          TestDataLoader.getTestData("@TD:cdploginpassword"));
         tapElementByXpath("//XCUIElementTypeButton[@name='Log In']", false);
       } catch (Exception ignored) {
         LOG.info("login to cdp is not needed");
@@ -94,9 +93,9 @@ public class IosBasicPage {
   }
 
   public WebElement waitForElementByXpath(long timeOutInSeconds, long sleepInMillis,
-      String elementXpath, boolean clickable) {
+    String elementXpath, boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        ofMillis(sleepInMillis));
+      ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(By.xpath(elementXpath)));
     } else {
@@ -105,22 +104,22 @@ public class IosBasicPage {
   }
 
   public WebElement waitForElementByAccessibilityId(long timeOutInSeconds, long sleepInMillis,
-      String elementAccessibilityId, boolean clickable) {
+    String elementAccessibilityId, boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        ofMillis(sleepInMillis));
+      ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(
-          AppiumBy.accessibilityId(elementAccessibilityId)));
+        AppiumBy.accessibilityId(elementAccessibilityId)));
     } else {
       return wait.until(ExpectedConditions.visibilityOfElementLocated(
-          AppiumBy.accessibilityId(elementAccessibilityId)));
+        AppiumBy.accessibilityId(elementAccessibilityId)));
     }
   }
 
   public WebElement waitForElementById(long timeOutInSeconds, long sleepInMillis, String elementId,
-      boolean clickable) {
+    boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        ofMillis(sleepInMillis));
+      ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.id(elementId)));
     } else {
@@ -129,9 +128,9 @@ public class IosBasicPage {
   }
 
   public List<WebElement> waitForPresenceOfElementsLocatedByXpath(long timeOutInSeconds,
-      long sleepInMillis, String elementXpath) {
+    long sleepInMillis, String elementXpath) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        ofMillis(sleepInMillis));
+      ofMillis(sleepInMillis));
     return wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(elementXpath)));
   }
 
@@ -287,7 +286,7 @@ public class IosBasicPage {
       LOG.info("checking for cookie popup");
       WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(seconds));
       wait.until(ExpectedConditions.visibilityOfElementLocated(
-          By.xpath("//*[contains(@title,'akzeptieren') or contains(@label,'accept')]")));
+        By.xpath("//*[contains(@title,'akzeptieren') or contains(@label,'accept')]")));
       tapElementByXpath("//*[contains(@title,'akzeptieren') or contains(@label,'accept')]", true);
       LOG.info("cookies accepted");
     } catch (Exception ignored) {
@@ -323,8 +322,8 @@ public class IosBasicPage {
     // In case that Save Password panel appear
     switchContext("native");
     if (!driver.findElements(
-            By.xpath("//XCUIElementTypeSheet[contains(@name,'Would you like to save this password')]"))
-        .isEmpty()) {
+        By.xpath("//XCUIElementTypeSheet[contains(@name,'Would you like to save this password')]"))
+      .isEmpty()) {
       tapElementByXpath("//XCUIElementTypeButton[@name='Never for This Website']", false);
     }
 
@@ -349,7 +348,7 @@ public class IosBasicPage {
       String direction = "down";
       while (!driver.findElement(By.xpath(locator)).isDisplayed()) {
         if (driver.findElement(By.xpath("//XCUIElementTypeOther[@name='content information']"))
-            .isDisplayed()) {
+          .isDisplayed()) {
           direction = "up";
         }
         scroll(direction);
@@ -445,7 +444,7 @@ public class IosBasicPage {
     int allOpenedTabs = driver.findElements(By.xpath(allOpenedTabXpath)).size();
     while (driver.findElements(By.xpath(allOpenedTabXpath)).size() >= allOpenedTabs) {
       String tabCloseIconXpath = String.format(
-          "(//XCUIElementTypeButton[@name=\"closeTabButton\"])[%s]", tabIndex);
+        "(//XCUIElementTypeButton[@name=\"closeTabButton\"])[%s]", tabIndex);
       tapElementByXpath(tabCloseIconXpath, false);
       LOG.info("Closed tab at index {}", tabIndex);
       //Wait about 1 seconds until the tab flies out
@@ -456,7 +455,7 @@ public class IosBasicPage {
   public void switchToTabAtIndex(int tabIndex) {
     openTiltedTabView();
     String expectedHandleTabXpath = String.format(
-        "(//XCUIElementTypeButton[@name=\"TiltedTabThumbnailView\"])[%s]", tabIndex);
+      "(//XCUIElementTypeButton[@name=\"TiltedTabThumbnailView\"])[%s]", tabIndex);
     tapElementByXpath(expectedHandleTabXpath, false);
     waitForElementByAccessibilityId(5, 1000L, "TabsButton", false);
   }
@@ -517,7 +516,7 @@ public class IosBasicPage {
   }
 
   public void waitForBothNativeAndWebViewContextAvailable(int retryCount,
-      int waitIntervalInSeconds) {
+    int waitIntervalInSeconds) {
     int retry = 0;
     while (driver.getContextHandles().size() < 2) {
       LOG.info("The WEB VIEW context is not ready yet. Try again");
@@ -525,13 +524,13 @@ public class IosBasicPage {
       retry++;
       if (retry >= retryCount) {
         throw new CucumberException(
-            "Web view context not loaded after " + waitIntervalInSeconds * retryCount + "seconds");
+          "Web view context not loaded after " + waitIntervalInSeconds * retryCount + "seconds");
       }
     }
   }
 
   public void scrollToElement(String expectedElementXpathToVisible, String elementXpathToStop,
-      String direction, int velocity) {
+    String direction, int velocity) {
     boolean elementIsFound = false;
     int retry = 0;
     do {
@@ -542,7 +541,7 @@ public class IosBasicPage {
         retry = 50;
       } catch (Exception e) {
         LOG.info("Element with xpath {} not visible in current screen!",
-            expectedElementXpathToVisible);
+          expectedElementXpathToVisible);
         swipeScreenToDirection(direction, velocity);
         try {
           waitForElementByXpath(1, 500, elementXpathToStop, false);
@@ -559,7 +558,7 @@ public class IosBasicPage {
     } while (retry <= 50);
     if (!elementIsFound) {
       throw new CucumberException(
-          "Element with xpath " + expectedElementXpathToVisible + " not found");
+        "Element with xpath " + expectedElementXpathToVisible + " not found");
     }
   }
 
@@ -583,7 +582,7 @@ public class IosBasicPage {
         switchContext("webview");
       } catch (Exception e) {
         throw new CucumberException(
-            "Handle authorization popup is failed due to: " + e.getMessage());
+          "Handle authorization popup is failed due to: " + e.getMessage());
       }
     }
   }

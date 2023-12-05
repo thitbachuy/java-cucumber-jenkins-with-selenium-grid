@@ -21,13 +21,13 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import steps.Hook;
 
 public class AndroidBasicPage {
@@ -41,9 +41,9 @@ public class AndroidBasicPage {
   }
 
   public WebElement waitForElementByXpath(long timeOutInSeconds, long sleepInMillis,
-      String elementXpath, boolean clickable) {
+    String elementXpath, boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        Duration.ofMillis(sleepInMillis));
+      Duration.ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(By.xpath(elementXpath)));
     } else {
@@ -52,22 +52,22 @@ public class AndroidBasicPage {
   }
 
   public WebElement waitForElementByAccessibilityId(long timeOutInSeconds, long sleepInMillis,
-      String elementAccessibilityId, boolean clickable) {
+    String elementAccessibilityId, boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        Duration.ofMillis(sleepInMillis));
+      Duration.ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(
-          new AppiumBy.ByAccessibilityId(elementAccessibilityId)));
+        new AppiumBy.ByAccessibilityId(elementAccessibilityId)));
     } else {
       return wait.until(ExpectedConditions.visibilityOfElementLocated(
-          new AppiumBy.ByAccessibilityId(elementAccessibilityId)));
+        new AppiumBy.ByAccessibilityId(elementAccessibilityId)));
     }
   }
 
   public WebElement waitForElementById(long timeOutInSeconds, long sleepInMillis, String elementId,
-      boolean clickable) {
+    boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        Duration.ofMillis(sleepInMillis));
+      Duration.ofMillis(sleepInMillis));
     if (clickable) {
       return wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.id(elementId)));
     } else {
@@ -154,7 +154,7 @@ public class AndroidBasicPage {
     if (!driver.findElements(By.xpath(locatorBackUp)).isEmpty()) {
       tapElementByXpath("//android.widget.RadioButton[@text='Never']");
       tapElementByXpath(
-          "//android.widget.Button[@text='DONE' or @resource-id='com.whatsapp:id/gdrive_new_user_setup_btn']");
+        "//android.widget.Button[@text='DONE' or @resource-id='com.whatsapp:id/gdrive_new_user_setup_btn']");
     }
     finishTourGuideOfApplication(appName);
   }
@@ -197,10 +197,10 @@ public class AndroidBasicPage {
     tapElementById("com.android.chrome:id/switchWidget");
     tapElementByAccessibilityId("Navigate up");
     waitForElementByXpath(30, 2000,
-        AndroidChromeLocators.createLabelLibrary().get("settingsMenuFirstElement"), false);
+      AndroidChromeLocators.createLabelLibrary().get("settingsMenuFirstElement"), false);
     driver.findElement(new AppiumBy.ByAndroidUIAutomator(
-            "new UiScrollable(new UiSelector().resourceId(\"com.android.chrome:id/recycler_view\")).scrollIntoView(new UiSelector().text(\"Languages\"));"))
-        .click();
+        "new UiScrollable(new UiSelector().resourceId(\"com.android.chrome:id/recycler_view\")).scrollIntoView(new UiSelector().text(\"Languages\"));"))
+      .click();
     tapElementById("com.android.chrome:id/switchWidget");
     tapElementByAccessibilityId("Navigate up");
     tapElementByAccessibilityId("Navigate up");
@@ -215,7 +215,7 @@ public class AndroidBasicPage {
       throw new CucumberException("Application " + application + " not supported");
     }
     CommandLine cmdClear = CommandLine.parse(
-        "adb -s " + System.getProperty("deviceUDID") + " shell pm clear " + appPackage);
+      "adb -s " + System.getProperty("deviceUDID") + " shell pm clear " + appPackage);
     DefaultExecutor shell = new DefaultExecutor();
     int exitValue = 9999;
     //Delete app cache and data
@@ -233,7 +233,7 @@ public class AndroidBasicPage {
       LOG.info("checking for cookie popup");
       WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(seconds));
       wait.until(ExpectedConditions.visibilityOfElementLocated(
-          By.xpath("//android.view.View[contains(@resource-id,'sp_message_iframe')]")));
+        By.xpath("//android.view.View[contains(@resource-id,'sp_message_iframe')]")));
       tapElementByXpath("//android.widget.Button[@text='Alle akzeptieren' or @text='Accept all']");
       LOG.info("cookies accepted");
     } catch (Exception ignored) {
@@ -292,7 +292,7 @@ public class AndroidBasicPage {
       retry++;
       if (retry >= retryCount) {
         throw new CucumberException(
-            "Web view context not loaded after " + waitInterval * retryCount + "seconds");
+          "Web view context not loaded after " + waitInterval * retryCount + "seconds");
       }
     }
   }
@@ -304,7 +304,7 @@ public class AndroidBasicPage {
 
   public static int adbCommand(String command) {
     CommandLine cmd = CommandLine.parse(
-        "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
+      "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
     LOG.info("used string to connect: {}", cmd);
     DefaultExecutor shell = new DefaultExecutor();
     int exitValue = 9999;
@@ -324,7 +324,7 @@ public class AndroidBasicPage {
       switch (Hook.platform) {
         case "android":
           CommandLine openSwitcher = CommandLine.parse("adb -s " + System.getProperty("deviceUDID")
-              + " shell input keyevent KEYCODE_APP_SWITCH");
+            + " shell input keyevent KEYCODE_APP_SWITCH");
           DefaultExecutor shell = new DefaultExecutor();
           try {
             shell.execute(openSwitcher);
@@ -334,7 +334,7 @@ public class AndroidBasicPage {
           break;
         case "android-ssh":
           String openSwitcherSSH = "adb -s " + System.getProperty("deviceUDID")
-              + " shell input keyevent KEYCODE_APP_SWITCH";
+            + " shell input keyevent KEYCODE_APP_SWITCH";
           adbCommand(openSwitcherSSH);
           break;
         default:
@@ -345,8 +345,8 @@ public class AndroidBasicPage {
       int width = driver.manage().window().getSize().width;
       TouchAction action = new TouchAction(driver);
       action.press(PointOption.point(width / 2, height / 2 + 200))
-          .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500)))
-          .moveTo(PointOption.point(width / 2, height / 2)).release().perform();
+        .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500)))
+        .moveTo(PointOption.point(width / 2, height / 2)).release().perform();
       int count = 0;
       String xpath = "//android.widget.ListView[@resource-id='com.google.android.apps.nexuslauncher:id/overview_panel']//android.widget.FrameLayout";
       while (count < 120) {
@@ -355,8 +355,8 @@ public class AndroidBasicPage {
           break;
         } else {
           action.press(PointOption.point(width / 2, height / 2))
-              .waitAction(WaitOptions.waitOptions(Duration.ofMillis(100)))
-              .moveTo(PointOption.point(width / 2, height / 5)).release().perform();
+            .waitAction(WaitOptions.waitOptions(Duration.ofMillis(100)))
+            .moveTo(PointOption.point(width / 2, height / 5)).release().perform();
         }
         waitFor(500).milliseconds();
         count++;
@@ -371,9 +371,9 @@ public class AndroidBasicPage {
       case "android-webApp":
       case "android-nativeApp":
         CommandLine openSwitcher = CommandLine.parse("adb -s " + System.getProperty("deviceUDID")
-            + " shell input keyevent KEYCODE_APP_SWITCH");
+          + " shell input keyevent KEYCODE_APP_SWITCH");
         CommandLine goLeft = CommandLine.parse("adb -s " + System.getProperty("deviceUDID")
-            + " shell input keyevent KEYCODE_DPAD_LEFT");
+          + " shell input keyevent KEYCODE_DPAD_LEFT");
         DefaultExecutor shell = new DefaultExecutor();
         //Open the app switcher and go left once
         try {
@@ -388,9 +388,9 @@ public class AndroidBasicPage {
       case "android-ssh":
         try {
           String openSwitcherSSH = "adb -s " + System.getProperty("deviceUDID")
-              + " shell input keyevent KEYCODE_APP_SWITCH";
+            + " shell input keyevent KEYCODE_APP_SWITCH";
           String goLeftSSH = "adb -s " + System.getProperty("deviceUDID")
-              + " shell input keyevent KEYCODE_DPAD_LEFT";
+            + " shell input keyevent KEYCODE_DPAD_LEFT";
           adbCommand(openSwitcherSSH);
           adbCommand(goLeftSSH);
           adbCommand(goLeftSSH);
@@ -412,7 +412,7 @@ public class AndroidBasicPage {
   }
 
   public void clearRunningApps(DefaultExecutor shell, CommandLine goLeft,
-      String clearAllButtonLocator) {
+    String clearAllButtonLocator) {
     int swipeCounter = 0;
     LOG.info("Found running app(s), try to clear them all");
     do {
@@ -429,9 +429,9 @@ public class AndroidBasicPage {
   }
 
   public void waitForInvisibilityOfElement(long timeOutInSeconds, long sleepInMillis,
-      String elementXpath, boolean clickable) {
+    String elementXpath, boolean clickable) {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeOutInSeconds),
-        Duration.ofMillis(sleepInMillis));
+      Duration.ofMillis(sleepInMillis));
     wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(elementXpath)));
   }
 
@@ -459,8 +459,8 @@ public class AndroidBasicPage {
     public void containsText(String text) {
       LOG.info("Try to scroll to expected element having text {}", text);
       driver.findElement(AppiumBy.androidUIAutomator(
-          "new UiScrollable(new UiSelector().scrollable(true))" +
-              ".scrollTextIntoView(\"" + text + "\")"));
+        "new UiScrollable(new UiSelector().scrollable(true))" +
+          ".scrollTextIntoView(\"" + text + "\")"));
     }
 
     public void inWebView() {
@@ -474,19 +474,19 @@ public class AndroidBasicPage {
           attempts++;
           if (attempts == 1) {
             driver.findElement(AppiumBy.androidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true)).flingToEnd(10);"));
+              "new UiScrollable(new UiSelector().scrollable(true)).flingToEnd(10);"));
             LOG.info("Expected element {} not visible. Scroll to bottom", elementName);
           } else {
             LOG.info("Expected element {} not visible. Continue scrolling up and find",
-                elementName);
+              elementName);
             driver.findElement(AppiumBy.androidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true)).scrollBackward(80);"));
+              "new UiScrollable(new UiSelector().scrollable(true)).scrollBackward(80);"));
           }
         }
       } while (attempts < 60);
       if (attempts >= 60) {
         throw new CucumberException(
-            "Expected element " + elementName + " not visible in current page");
+          "Expected element " + elementName + " not visible in current page");
       }
     }
 
@@ -503,13 +503,13 @@ public class AndroidBasicPage {
 
   //Verify status of an element whether it is checked or not via attribute
   public void verifyElementCheckedStatusViaAttribute(String elementName, String elementXpath,
-      String status, String attribute) {
+    String status, String attribute) {
     scrollTo().element(elementName, elementXpath).inWebView();
     int retry = 0;
     do {
       try {
         String receiverTypeActualStatus = waitForElementByXpath(30, 1000L, elementXpath,
-            false).getAttribute(attribute);
+          false).getAttribute(attribute);
         if (status.equals("checked") || status.equals("ticked")) {
           Assert.assertEquals("true", receiverTypeActualStatus);
         } else {
@@ -578,7 +578,7 @@ public class AndroidBasicPage {
     selectDay(day);
     tapElementByXpath(DatePickerLocators.createLibraryButton().get("set"));
     waitForInvisibilityOfElement(30, 1000L,
-        DatePickerLocators.createLibraryElement().get("date picker"), false);
+      DatePickerLocators.createLibraryElement().get("date picker"), false);
   }
 
   //Select desired day
@@ -591,7 +591,7 @@ public class AndroidBasicPage {
   //Select desired month
   public void selectMonthInCalendar(String month) {
     waitForElementByXpath(30, 1000L, DatePickerLocators.createLibraryElement().get("day picker"),
-        false);
+      false);
     String localDate = LocalDate.now().toString();
     String monthInView = localDate.split("-")[1];
     //Calculate month differences to know number of clicking next or previous month
@@ -616,10 +616,10 @@ public class AndroidBasicPage {
   //Select desired year
   public void selectYearInCalendar(String year) {
     waitForElementByXpath(30, 1000L, DatePickerLocators.createLibraryElement().get("date picker"),
-        false);
+      false);
     tapElementByXpath(DatePickerLocators.createLibraryButton().get("header year"));
     waitForElementByXpath(30, 1000L, DatePickerLocators.createLibraryElement().get("year picker"),
-        false);
+      false);
     String yearXpath = "//android.widget.TextView[@text='" + year + "']";
     scrollTo().element(year, yearXpath).inWebView();
     tapElementByXpath(yearXpath);
@@ -627,24 +627,24 @@ public class AndroidBasicPage {
 
   @SuppressWarnings("rawtypes")
   public void selectValueInsideDropdown(String value, String dropdownXpath,
-      String firstElementInsideXpath, String lastElementInsideXpath) {
+    String firstElementInsideXpath, String lastElementInsideXpath) {
     //Calculate {startPoint, endPoint} to scroll inside dropdown
     WebElement openedDropdown = waitForElementByXpath(30, 500L, dropdownXpath, false);
     int dropdownHeight = openedDropdown.getSize().getHeight();
     WebElement firstElementInDropdown = waitForElementByXpath(10, 500L, firstElementInsideXpath,
-        false);
+      false);
     int elementHeightInDropdown = firstElementInDropdown.getSize().getHeight();
     int totalElementDisplaySameTime = dropdownHeight / elementHeightInDropdown;
     Point firstElementCoordinate = firstElementInDropdown.getLocation();
     //Set startPoint
     int startPointX =
-        openedDropdown.getLocation().getX() + firstElementInDropdown.getSize().getWidth() + 2;
+      openedDropdown.getLocation().getX() + firstElementInDropdown.getSize().getWidth() + 2;
     int startPointY =
-        firstElementCoordinate.getY() + elementHeightInDropdown * totalElementDisplaySameTime;
+      firstElementCoordinate.getY() + elementHeightInDropdown * totalElementDisplaySameTime;
     PointOption startPoint = PointOption.point(startPointX, startPointY);
     //Set endPoint
     PointOption endPoint = PointOption.point(startPointX,
-        firstElementInDropdown.getLocation().getY());
+      firstElementInDropdown.getLocation().getY());
     //Scroll until value found
     boolean isAtBottomList = false;
     do {
@@ -675,14 +675,14 @@ public class AndroidBasicPage {
 
   public void scrollBackward(int steps) {
     driver.findElement(AppiumBy.androidUIAutomator(
-        "new UiScrollable(new UiSelector().scrollable(true)).scrollBackward(" + steps + ");")
+      "new UiScrollable(new UiSelector().scrollable(true)).scrollBackward(" + steps + ");")
     );
     LOG.info("Scroll backward with step {}", steps);
   }
 
   //Enter text to field in web view context
   public void enterValueToTextFieldInWebView(String value, String textField,
-      String textFieldXpath) {
+    String textFieldXpath) {
     value = TestDataLoader.getTestData(value);
     scrollTo().element(textField, textFieldXpath).inWebView();
     if (value.equals("empty")) {

@@ -3,19 +3,18 @@ package pages.android;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.cucumber.core.exception.CucumberException;
+import java.io.IOException;
+import java.util.Map;
 import locators.android.AndroidChromeLocators;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import steps.Hook;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class AndroidChromePage extends AndroidBasicPage {
 
@@ -35,7 +34,7 @@ public class AndroidChromePage extends AndroidBasicPage {
 
   public static int adbCommand(String command) {
     CommandLine cmd = CommandLine.parse(
-        "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
+      "ssh pascalkallenborn@" + MAC_IP_ADDRESS + " \"" + command + "\"");
     LOG.info("used string to connect: {}", cmd);
     DefaultExecutor shell = new DefaultExecutor();
     int exitValue = 9999;
@@ -51,10 +50,10 @@ public class AndroidChromePage extends AndroidBasicPage {
   public void removeChromeData() {
     //Initialization
     CommandLine cmdClear = CommandLine.parse(
-        "adb -s " + System.getProperty("deviceUDID") + " shell pm clear com.android.chrome");
+      "adb -s " + System.getProperty("deviceUDID") + " shell pm clear com.android.chrome");
 //        CommandLine cmdStart = CommandLine.parse("adb -s " + System.getProperty("deviceUDID") + " shell am start -n com.android.chrome/com.google.android.apps.chrome.Main");
     CommandLine cmdStop = CommandLine.parse(
-        "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop com.android.chrome");
+      "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop com.android.chrome");
 
     DefaultExecutor shell = new DefaultExecutor();
     int exitValue = 9999;
@@ -63,9 +62,9 @@ public class AndroidChromePage extends AndroidBasicPage {
       exitValue = shell.execute(cmdClear);
     } catch (IOException ignored) {
     }
-      if (exitValue > 0) {
-          throw new CucumberException("Cannot remove Chrome app data!");
-      }
+    if (exitValue > 0) {
+      throw new CucumberException("Cannot remove Chrome app data!");
+    }
     //Start app
 //        try {
 //            exitValue = shell.execute(cmdStart);
@@ -96,9 +95,9 @@ public class AndroidChromePage extends AndroidBasicPage {
       exitValue = shell.execute(cmdStop);
     } catch (IOException ignored) {
     }
-      if (exitValue > 0) {
-          throw new CucumberException("Cannot stop Chrome app!");
-      }
+    if (exitValue > 0) {
+      throw new CucumberException("Cannot stop Chrome app!");
+    }
 //        try {
 //            exitValue = shell.execute(cmdStart);
 //        } catch (IOException ignored) {
@@ -116,18 +115,18 @@ public class AndroidChromePage extends AndroidBasicPage {
 
   public void removeChromeDataSSH() {
     String cmdClear =
-        "adb -s " + System.getProperty("deviceUDID") + " shell pm clear com.android.chrome";
+      "adb -s " + System.getProperty("deviceUDID") + " shell pm clear com.android.chrome";
     String cmdStart = "adb -s " + System.getProperty("deviceUDID")
-        + " shell am start -n com.android.chrome/com.google.android.apps.chrome.Main";
+      + " shell am start -n com.android.chrome/com.google.android.apps.chrome.Main";
     String cmdStop =
-        "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop com.android.chrome";
+      "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop com.android.chrome";
 
-      if (adbCommand(cmdClear) > 0) {
-          LOG.info("Cannot remove Chrome app data!");
-      }
-      if (adbCommand(cmdStart) > 0) {
-          LOG.info("Cannot start Chrome app!");
-      }
+    if (adbCommand(cmdClear) > 0) {
+      LOG.info("Cannot remove Chrome app data!");
+    }
+    if (adbCommand(cmdStart) > 0) {
+      LOG.info("Cannot start Chrome app!");
+    }
     //Accept terms and conditions
     tapElementById("com.android.chrome:id/send_report_checkbox");
     tapElementById("com.android.chrome:id/terms_accept");
@@ -135,8 +134,8 @@ public class AndroidChromePage extends AndroidBasicPage {
       //Decline the sync option (if prompted)
       waitForElementById(3, 500, "com.android.chrome:id/negative_button", false).click();
       waitForElementByXpath(1, 500,
-          "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
-          true).click();
+        "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
+        true).click();
       //Disable password saving and auto-translate suggestions
       tapElementByAccessibilityId("More options");
       tapElementByAccessibilityId("Settings");
@@ -145,27 +144,27 @@ public class AndroidChromePage extends AndroidBasicPage {
       tapElementByAccessibilityId("Navigate up");
       waitForElementByXpath(30, 2000, xpathToLabel.get("settingsMenuFirstElement"), false);
       driver.findElement(AppiumBy.androidUIAutomator(
-              ("new UiScrollable(new UiSelector().resourceId(\"com.android.chrome:id/recycler_view\")).scrollIntoView(new UiSelector().text(\"Languages\"));")))
-          .click();
+          ("new UiScrollable(new UiSelector().resourceId(\"com.android.chrome:id/recycler_view\")).scrollIntoView(new UiSelector().text(\"Languages\"));")))
+        .click();
       tapElementById("com.android.chrome:id/switchWidget");
       tapElementByAccessibilityId("Navigate up");
       tapElementByAccessibilityId("Navigate up");
-        if (adbCommand(cmdStop) > 0) {
-            LOG.info("Cannot stop Chrome app!");
-        }
-        if (adbCommand(cmdStart) > 0) {
-            waitForElementById(3, 500, "com.android.chrome:id/button_secondary", false).click();
-        }
+      if (adbCommand(cmdStop) > 0) {
+        LOG.info("Cannot stop Chrome app!");
+      }
+      if (adbCommand(cmdStart) > 0) {
+        waitForElementById(3, 500, "com.android.chrome:id/button_secondary", false).click();
+      }
       waitForElementByXpath(2, 500,
-          "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
-          true).click();
+        "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
+        true).click();
       //Close all tabs
       tapElementById("com.android.chrome:id/tab_switcher_button");
       tapElementByAccessibilityId("More options");
       tapElementByAccessibilityId("Close all tabs");
       waitForElementByXpath(2, 500,
-          "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
-          true).click();
+        "//*[@resource-id='com.android.chrome:id/promo_dialog_layout']//*[@resource-id='com.android.chrome:id/button_bar']//android.widget.Button[contains(@text,'No')]",
+        true).click();
     } catch (TimeoutException ignored) {
     }
   }
@@ -179,9 +178,9 @@ public class AndroidChromePage extends AndroidBasicPage {
     String urlShown = waitForElementById(30, 1000, "com.android.chrome:id/url_bar", true).getText();
     LOG.info("url in chrome app: \"{}\" vs. expected \"{}\"", urlShown, xpathToUrl.get(url));
     String titleShown = waitForElementById(30, 500, "com.android.chrome:id/compositor_view_holder",
-        true).findElement(By.xpath("//android.webkit.WebView")).getText();
+      true).findElement(By.xpath("//android.webkit.WebView")).getText();
     LOG.info("title shown in chrome app: {} vs. expected \"{}\"", titleShown,
-        xpathToTitle.get(title));
+      xpathToTitle.get(title));
     waitForElementByXpath(30, 500, xpathToLandingPage.get(page), false);
     Assert.assertTrue(titleShown.contains(xpathToTitle.get(title)));
     Assert.assertTrue(urlShown.contains(xpathToUrl.get(url)));
@@ -224,13 +223,13 @@ public class AndroidChromePage extends AndroidBasicPage {
       typeTextIntoElementByXpath(xpathToTextfield.get("set new pin4"), value.substring(3, 4));
     } else if (textfield.equalsIgnoreCase("confirm set new pin")) {
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin1"),
-          value.substring(0, 1));
+        value.substring(0, 1));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin2"),
-          value.substring(1, 2));
+        value.substring(1, 2));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin3"),
-          value.substring(2, 3));
+        value.substring(2, 3));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin4"),
-          value.substring(3, 4));
+        value.substring(3, 4));
     } else {
       typeTextIntoElementByXpath(xpathToTextfield.get(textfield), value);
     }
@@ -252,7 +251,7 @@ public class AndroidChromePage extends AndroidBasicPage {
     if ("cdp login".equalsIgnoreCase(button)) {
       waitFor(3).seconds();
       if (!driver.findElements(By.xpath(("//android.widget.TextView[contains(@text,'Fehler')]")))
-          .isEmpty()) {
+        .isEmpty()) {
         tapElementByXpath(xpathToButton.get(button));
       }
     }
@@ -287,7 +286,7 @@ public class AndroidChromePage extends AndroidBasicPage {
     }
     cookiesPopUpChromeApp(1);
     Assert.assertTrue(
-        driver.findElements(By.xpath(("//*[contains(@text,'" + text + "')]"))).isEmpty());
+      driver.findElements(By.xpath(("//*[contains(@text,'" + text + "')]"))).isEmpty());
   }
 
   public void openURLAndroidChrome(String url) {
@@ -300,28 +299,28 @@ public class AndroidChromePage extends AndroidBasicPage {
       case "android-nativeApp":
         LOG.info("Opening link with the default browser: {}", url);
         CommandLine cmd = CommandLine.parse("adb -s " + System.getProperty("deviceUDID")
-            + " shell am start -a android.intent.action.VIEW -d " + url);
+          + " shell am start -a android.intent.action.VIEW -d " + url);
         DefaultExecutor executor = new DefaultExecutor();
         int exitValue = 9999;
         try {
           exitValue = executor.execute(cmd);
         } catch (IOException ignored) {
         }
-          if (exitValue != 0) {
-              throw new CucumberException("Cannot open URL via adb!");
-          }
+        if (exitValue != 0) {
+          throw new CucumberException("Cannot open URL via adb!");
+        }
         waitFor(3).seconds();
         break;
       case "android-ssh":
         url = "'" + url + "'";
         LOG.info("Opening link with the default browser: {}", url);
         String cmdSSH = "adb -s " + System.getProperty("deviceUDID") + " shell am start -d " + url
-            + " -a android.intent.action.VIEW";
+          + " -a android.intent.action.VIEW";
         LOG.info("command to open link: {}", cmdSSH);
-          if (adbCommand(cmdSSH) != 0) // throw new CucumberException("Cannot open URL via adb!");
-          {
-              waitFor(3).seconds();
-          }
+        if (adbCommand(cmdSSH) != 0) // throw new CucumberException("Cannot open URL via adb!");
+        {
+          waitFor(3).seconds();
+        }
         break;
       default:
         throw new CucumberException("please choose valid android platform");

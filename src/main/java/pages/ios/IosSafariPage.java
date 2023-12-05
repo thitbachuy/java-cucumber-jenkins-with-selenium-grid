@@ -3,18 +3,17 @@ package pages.ios;
 import config.TestDataLoader;
 import io.appium.java_client.ios.IOSDriver;
 import io.cucumber.core.exception.CucumberException;
-import locators.ios.IosSafariLocators;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-import steps.Hook;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import locators.ios.IosSafariLocators;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
+import steps.Hook;
 
 public class IosSafariPage extends IosBasicPage {
 
@@ -44,9 +43,9 @@ public class IosSafariPage extends IosBasicPage {
     js.executeScript("mobile: swipe", params);
     tapElementByXpath("//XCUIElementTypeSearchField[@name='Search']", false);
     waitForElementByXpath(30, 0, "//XCUIElementTypeSearchField[@name='Search']", false).sendKeys(
-        "Safari");
+      "Safari");
     waitForElementByXpath(30, 1000,
-        "//XCUIElementTypeCollectionView//XCUIElementTypeCell[@name='Safari']", true).click();
+      "//XCUIElementTypeCollectionView//XCUIElementTypeCell[@name='Safari']", true).click();
 
     // Search for Clear History and Website Data and clear history
     scrollObject2.put("predicateString", "value == 'Clear History and Website Data'");
@@ -54,9 +53,9 @@ public class IosSafariPage extends IosBasicPage {
     js.executeScript("mobile: scroll", scrollObject2);
 
     waitForElementByXpath(30, 0, "//XCUIElementTypeStaticText[contains(@label,'Clear History')]",
-        true).click();
+      true).click();
     waitForElementByXpath(30, 0, "//XCUIElementTypeButton[@name='Clear History and Data']",
-        true).click();
+      true).click();
     //Wait for 10 seconds to ensure that clear action fully completed
     waitFor(10).seconds();
   }
@@ -69,7 +68,7 @@ public class IosSafariPage extends IosBasicPage {
     int count = 0;
     while (count < 240) {
       List<WebElement> titles = driver.findElements(
-          By.xpath("//*[contains(@name,'" + xpathToTitle.get(title) + "')]"));
+        By.xpath("//*[contains(@name,'" + xpathToTitle.get(title) + "')]"));
       if (!titles.isEmpty()) {
         titleShown = titles.get(0).getAttribute("name");
         if (titleShown == null) {
@@ -84,15 +83,15 @@ public class IosSafariPage extends IosBasicPage {
     }
     //  String titleShown = waitForElementByXpath(120, 500, "(//*[contains(@name,'" + xpathToTitle.get(title) + "')])[1]", false).getAttribute("name");
     LOG.info("title shown in safari app: {} vs. expected \"{}\" on \"{}\"", titleShown,
-        xpathToTitle.get(title), page);
+      xpathToTitle.get(title), page);
 
     waitForElementByXpath(120, 250, "(//XCUIElementTypeOther[@name='Address' or @name='URL'])[1]",
-        true).click();
+      true).click();
     String urlShown = waitForElementByXpath(30, 250, "//XCUIElementTypeTextField[@name='URL']",
-        false).getAttribute("value");
+      false).getAttribute("value");
     //   tapElementByXpath("//XCUIElementTypeButton[@name='Go']", true);
     LOG.info("url in safari app: \"{}\" vs. expected \"{}\" on \"{}\"", urlShown,
-        xpathToUrl.get(url), page);
+      xpathToUrl.get(url), page);
 
     assert titleShown != null;
     Assert.assertTrue(titleShown.contains(xpathToTitle.get(title)));
@@ -126,13 +125,13 @@ public class IosSafariPage extends IosBasicPage {
       typeTextIntoElementByXpath(xpathToTextfield.get("set new pin4"), value.substring(3, 4));
     } else if (textfield.equalsIgnoreCase("confirm set new pin")) {
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin1"),
-          value.substring(0, 1));
+        value.substring(0, 1));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin2"),
-          value.substring(1, 2));
+        value.substring(1, 2));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin3"),
-          value.substring(2, 3));
+        value.substring(2, 3));
       typeTextIntoElementByXpath(xpathToTextfield.get("confirm set new pin4"),
-          value.substring(3, 4));
+        value.substring(3, 4));
     } else if (textfield.equalsIgnoreCase("cdp old pin")) {
       typeTextIntoElementByXpath(xpathToTextfield.get("cdp old pin1"), value.substring(0, 1));
       typeTextIntoElementByXpath(xpathToTextfield.get("cdp old pin2"), value.substring(1, 2));
@@ -173,7 +172,7 @@ public class IosSafariPage extends IosBasicPage {
     waitFor(500).seconds();
     int count = 1;
     List<WebElement> tabs = driver.findElements(
-        By.xpath("//XCUIElementTypeButton[@name='closeTabButton']"));
+      By.xpath("//XCUIElementTypeButton[@name='closeTabButton']"));
     if (tabs.size() > 1) {
       while (count < tabs.size()) {
         tabs.get(0).click();
@@ -202,11 +201,11 @@ public class IosSafariPage extends IosBasicPage {
     if (url.contains("skycdp") || url.contains("dein-sky.com")) {
       LOG.info("need to check for login to cdp");
       if (!driver.findElements(By.xpath(("//XCUIElementTypeTextField[@value='User Name']")))
-          .isEmpty()) {
+        .isEmpty()) {
         typeTextIntoElementByXpath("//XCUIElementTypeTextField[@value='User Name']",
-            TestDataLoader.getTestData("@TD:cdploginemail"));
+          TestDataLoader.getTestData("@TD:cdploginemail"));
         typeTextIntoElementByXpath("//XCUIElementTypeSecureTextField[@value='Password']",
-            TestDataLoader.getTestData("@TD:cdploginpassword"));
+          TestDataLoader.getTestData("@TD:cdploginpassword"));
         tapElementByXpath("//XCUIElementTypeButton[@name='Log In']", false);
       }
     }
@@ -254,22 +253,22 @@ public class IosSafariPage extends IosBasicPage {
   public void verifyTextfieldNotVisible(String textfield) {
     if (textfield.equalsIgnoreCase("set new pin")) {
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("set new pin1"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("set new pin1"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("set new pin2"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("set new pin2"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("set new pin3"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("set new pin3"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("set new pin4"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("set new pin4"))).isEmpty());
     } else if (textfield.equalsIgnoreCase("confirm set new pin")) {
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin1"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin1"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin2"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin2"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin3"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin3"))).isEmpty());
       Assert.assertTrue(
-          driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin4"))).isEmpty());
+        driver.findElements(By.xpath(xpathToTextfield.get("confirm set new pin4"))).isEmpty());
     } else {
       Assert.assertTrue(driver.findElements(By.xpath(xpathToTextfield.get(textfield))).isEmpty());
     }
@@ -278,20 +277,20 @@ public class IosSafariPage extends IosBasicPage {
   public void verifyElementVissible(String element) {
     closeKeyboard();
     Assert.assertTrue(
-        waitForElementByXpath(60, 150, xpathToElement.get(element), false).isDisplayed());
+      waitForElementByXpath(60, 150, xpathToElement.get(element), false).isDisplayed());
   }
 
   public void verifyMessage(String message) {
     closeKeyboard();
     String locator = "//*[contains(@value,'" + message + "') or contains(@label,'" + message
-        + "') or contains(@name,'" + message + "')]";
+      + "') or contains(@name,'" + message + "')]";
     Assert.assertTrue(waitForElementByXpath(60, 250, locator, false).isDisplayed());
   }
 
   public void verifyMessageNotVisible(String message) {
     closeKeyboard();
     String locator = "//*[contains(@value,'" + message + "') or contains(@label,'" + message
-        + "') or contains(@name,'" + message + "')]";
+      + "') or contains(@name,'" + message + "')]";
     Assert.assertTrue(driver.findElements(By.xpath(locator)).isEmpty());
   }
 }

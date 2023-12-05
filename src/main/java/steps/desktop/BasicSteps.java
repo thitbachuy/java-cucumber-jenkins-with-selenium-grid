@@ -236,14 +236,6 @@ public class BasicSteps {
     basicPage.closeTab(Integer.parseInt(tabIndex));
   }
 
-  @Then("the user sees following {string} on current page")
-  public void the_user_sees_following_string_on_current_page(String dataType, DataTable data) {
-
-    List<String> expectedInfo = data.asList(String.class);
-    basicPage.verifyInformation(dataType, expectedInfo);
-  }
-
-
   /**
    * @param context   {salesforce account detail page,salesforce contact detail page,tbd..}
    * @param tableName {name of the table inside context}

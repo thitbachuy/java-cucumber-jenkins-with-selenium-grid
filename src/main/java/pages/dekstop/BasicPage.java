@@ -437,12 +437,6 @@ public class BasicPage extends BasePage {
     }
   }
 
-  public void verifyInformation(String dataType, List<String> expectedInfo) {
-    if (dataType.equals("information")) {
-      verifyInformationDisplay(dataType, expectedInfo);
-    }
-  }
-
   /**
    * Logic: - Get column index via column name and save to a map (to avoid repeat
    * getIndexOfColumnNameInTable for every row) - Verify table data + Define unique column based on

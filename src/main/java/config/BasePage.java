@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +32,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
@@ -46,6 +43,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import pages.ios.IosBasicPage;
 import steps.Hook;
 
@@ -481,8 +479,9 @@ public class BasePage {
 
     public void perform() {
       Assert.assertTrue(
+        this.loopCount > 0,
         String.format("Wrong number of loop: [%s]. Please pass the integer value greater than 0!",
-          this.loopCount), this.loopCount > 0);
+          this.loopCount));
       for (int loop = 0; loop < this.loopCount; loop++) {
         executeJs(script, waitForVisibilityOfElementLocated(By.xpath(this.elementXpath)));
         LOG.info("User scrolls to {} the {} time(s)", this.direction, loop + 1);
@@ -581,8 +580,8 @@ public class BasePage {
     scrollToBottom(200);
     String pageContent = getTextOfElement(By.xpath("//body"));
     LOG.info("Page content is {}", pageContent);
-    Assert.assertTrue(String.format("Current page does not contains text %s as expected", text),
-      pageContent.contains(text));
+    Assert.assertTrue(pageContent.contains(text),
+      String.format("Current page does not contains text %s as expected", text));
     LOG.info("Current page contains text \"{}\".", text);
   }
 
@@ -666,8 +665,8 @@ public class BasePage {
 
   public void checkIsVisibleByXpath(String selector) {
     Assert.assertTrue(
-      String.format("The element with selector \"%s\" is not visible to the user.", selector),
-      waitForVisibilityOfElementLocated(By.xpath(selector)).isDisplayed()
+      waitForVisibilityOfElementLocated(By.xpath(selector)).isDisplayed(),
+      String.format("The element with selector \"%s\" is not visible to the user.", selector)
     );
   }
 
@@ -1223,29 +1222,6 @@ public class BasePage {
     }
   }
 
-  public void verifyInformationDisplay(String informationType, List<String> informationList) {
-    informationList = convertToTestDataWithNoSpecialChar(informationList);
-    waitForPageLoaded();
-    StringBuilder pageContent = new StringBuilder(getTextOfElement(By.xpath("//body")));
-    LOG.info("Page content is {}", pageContent);
-    for (String info : informationList) {
-      try {
-        Assert.assertTrue(String.format("The page content does not contains: %s", info),
-          pageContent.toString().contains(info));
-        LOG.info("This \"{}\" {} displays as expected", info, informationType);
-      } catch (AssertionError e) {
-        LOG.info(
-          "This \"{}\" {} is NOT displays as expected. Trying to scroll down and verify again",
-          info, informationType);
-        scrollToBottom(200);
-        waitForPageLoaded();
-        pageContent = new StringBuilder(getTextOfElement(By.xpath("//body")));
-        Assert.assertTrue(String.format("The page content does not contains: %s", info),
-          pageContent.toString().contains(info));
-      }
-    }
-  }
-
   public void verifyInformationNotDisplay(String informationType, List<String> informationList) {
     informationList = convertToTestDataWithNoSpecialChar(informationList);
     waitForPageLoaded();
@@ -1258,106 +1234,10 @@ public class BasePage {
     });
   }
 
-  public void verifyInformationNotDisplayedInSFTab(String informationType,
-    List<String> informationList) {
-    informationList = convertToTestDataWithNoSpecialChar(informationList);
-    waitForPageLoaded();
-    scrollToBottom();
-    String pageContent = getTextOfElement(By.xpath("//div[contains(@class,'active lafPageHost')]"));
-    LOG.info("Page content is {}", pageContent);
-    informationList.forEach(info -> {
-      Assert.assertFalse(String.format("%s %s is displayed!", informationType, info),
-        pageContent.contains(info));
-      LOG.info("This \"{}\" {} does not displays as expected", info, informationType);
-    });
-  }
-
-  public void verifyInformationDisplayedInSFTab(String informationType,
-    List<String> informationList) {
-    informationList = convertToTestDataWithNoSpecialChar(informationList);
-    waitForSpinnerSF(1);
-    waitForPageLoaded();
-    String pageContent;
-    if (informationType.equalsIgnoreCase("email content")) {
-      threadLocalDriverBasePage.get().switchTo().frame(
-        waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='CK Editor Container']")));
-      threadLocalDriverBasePage.get().switchTo()
-        .frame(waitForVisibilityOfElementLocated(By.xpath("//iframe[@title='Email Body']")));
-      pageContent = getTextOfElement(By.xpath("//body[@contenteditable='true']"));
-      threadLocalDriverBasePage.get().switchTo().defaultContent();
-    } else {
-      pageContent = getTextOfElement(By.xpath("//div[contains(@class,' active lafPageHost')]"));
-    }
-    LOG.info("Page content is {}", pageContent);
-    for (String info : informationList) {
-      try {
-        Assert.assertTrue(pageContent.contains(info));
-        LOG.info("This \"{}\" {} displays as expected", info, informationType);
-      } catch (AssertionError e) {
-        scrollToBottom();
-        pageContent = getTextOfElement(By.xpath("//div[contains(@class,'active lafPageHost')]"));
-        Assert.assertTrue(String.format("%s %s is not displayed!", informationType, info),
-          pageContent.contains(info));
-        LOG.info("This \"{}\" {} displays as expected", info, informationType);
-      }
-    }
-  }
-
-  public static String getFacebookUserId(String username) {
-    String userId = null;
-    if (Hook.testedEnv.equalsIgnoreCase("sit")) {
-      userId = "805329019831936";
-    }
-    if (Hook.testedEnv.equalsIgnoreCase("prod")) {
-      userId = "109554844183465";
-    }
-    if (Hook.testedEnv.equalsIgnoreCase("uat")) {
-      if (username.contains("SkyService")) {
-        userId = TestDataLoader.getTestData("TD:chatBotId_SkyService");
-      } else {
-        userId = TestDataLoader.getTestData("TD:chatBotId_NonSkyService");
-      }
-    }
-    Assert.assertNotNull(
-      String.format("Cannot get user id of the %s in %s environment", username, Hook.testedEnv),
-      userId);
-    return userId;
-  }
-
-  public void clickElementUntilItNotDisplay(String elementXpath, int retry) {
-    int attempt = 0;
-    do {
-      clickOrEvaluateAndClick(elementXpath);
-      try {
-        waitForInvisibilityOfElementLocated(By.xpath(elementXpath), 10);
-        LOG.info("Element {} is clicked successfully and not display", elementXpath);
-        break;
-      } catch (Exception e) {
-        attempt++;
-      }
-    } while (attempt < retry);
-  }
-
-  public void createCtiCaseForCustomer(String accountId, String callReason) {
-    String customerID = TestDataLoader.getTestData(accountId);
-    String callId = generateRandomWord(13);
-    String ctiUrl =
-      "https://skyde--uat--c.visualforce.com/flow/CTI_Flow_For_Softphone_Integration?extID="
-        + customerID + "&reasonForCall=" + callReason + "&CallID=" + callId;
-    threadLocalDriverBasePage.get().get(ctiUrl);
-    waitForPageLoaded();
-    waitForSpinnerCDP(1);
-    LOG.info("Navigate to create CTI case url: {}", ctiUrl);
-    clickButtonByText("Next");
-    waitForSpinnerCDP(1);
-    verifyVisibilityOfElement("Case detail",
-      "//*[contains(@class,'entityNameTitle') and text()='Case']");
-    LOG.info("Case detail page is displayed");
-  }
-
   public void verifyPageTitle(String pageTitle) {
-    Assert.assertTrue(String.format("The title [%s] is not matched with current: [%s]", pageTitle,
-      threadLocalDriverBasePage.get().getTitle()), waitForPageTitleToContain(pageTitle, 30));
+    Assert.assertTrue(waitForPageTitleToContain(pageTitle, 30),
+      String.format("The title [%s] is not matched with current: [%s]", pageTitle,
+        threadLocalDriverBasePage.get().getTitle()));
     LOG.info("\"{}\" page title is verified", pageTitle);
   }
 
@@ -1405,47 +1285,6 @@ public class BasePage {
     return status;
   }
 
-  public void verifyFieldWithValueInSalesforce(String fieldName, String comparison, String value,
-    String infoValueXpath) {
-    String actual;
-    String attributeType;
-    if (TestDataLoader.getTestData(value).equals("empty") || TestDataLoader.getTestData(value)
-      .equals("null")) {
-      // Deal with empty / null value
-      value = "";
-      actual = waitForPresenceOfElementLocated(By.xpath(infoValueXpath)).getAttribute("innerText");
-    } else {
-      if (fieldName.equalsIgnoreCase("PAYBACK Kartennummer") || fieldName.equalsIgnoreCase(
-        "Erworbene PAYBACK-Punkte")) {
-        attributeType = "value";
-      } else {
-        attributeType = "innerText";
-      }
-      // Deal with not empty / not null value
-      actual = waitForVisibilityOfElementLocated(By.xpath(infoValueXpath)).getAttribute(
-          attributeType).replace("\n", " ").replaceAll("\\sOpen\\s.+\\sPreview\\s", "")
-        .replaceAll("\\sOpen\\s.+\\sPreview", "");
-      // Handle date time data
-      value = handleDateTimeData(fieldName, value);
-    }
-    if (comparison.equalsIgnoreCase("is")) {
-      Assert.assertEquals(
-        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value,
-        actual);
-    } else if (comparison.equalsIgnoreCase("is not")) {
-      Assert.assertNotEquals(
-        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value), value,
-        actual);
-    } else if (comparison.equalsIgnoreCase("contain")) {
-      Assert.assertTrue(
-        String.format("Fail to verify if value of %s %s %S", fieldName, comparison, value),
-        actual.contains(value));
-    } else {
-      throw new CucumberException("Comparison should be {'is', 'is not'}");
-    }
-    LOG.info("The value of \"{}\" {} \"{}\" as expected", fieldName, comparison, value);
-  }
-
   public String handleDateTimeData(String fieldName, String value) {
     List<String> fieldNeedHandleData = Arrays.asList("date of activation", "date of inactivation",
       "signature date", "created by", "last modified by", "kündigung möglich bis");
@@ -1478,66 +1317,6 @@ public class BasePage {
       value = TestDataLoader.getTestData(value);
     }
     return value;
-  }
-
-  public void checkIfCheckBoxIsClickable(String action, String checkboxXpath) {
-    if (action.equals("can not")) {
-      try {
-        waitForElementToBeClickable(By.xpath(checkboxXpath), 2).click();
-        throw new CucumberException(
-          "Fail due to checkbox " + checkboxXpath + " is clickable by the user.");
-      } catch (TimeoutException | ElementClickInterceptedException e) {
-        LOG.info("Checkbox {} is not clickable as expected", checkboxXpath);
-      }
-    } else if (action.equals("can")) {
-      try {
-        waitForElementToBeClickable(By.xpath(checkboxXpath), 2);
-        LOG.info("Checkbox {} is clickable as expected", checkboxXpath);
-      } catch (TimeoutException e) {
-        throw new CucumberException(
-          "Fail due to checkbox " + checkboxXpath + " is not clickable by the user.");
-      }
-    } else {
-      throw new CucumberException("Action must be {can or cannot}");
-    }
-  }
-
-  public void verifyInformationNotDisplayInSpecificArea(String objectName,
-    Map<String, String> areaXpath, List<String> informationOrElementXpathList, int scrollLoop) {
-    Assert.assertEquals(
-      "Area xpath map must contain 2 key-value {area scrollable xpath, area body xpath}", 2,
-      areaXpath.keySet().size());
-    Assert.assertTrue("Area xpath map must contain key {area scrollable xpath",
-      areaXpath.containsKey("area scrollable xpath"));
-    Assert.assertTrue("Area xpath map must contain key {area body xpath}",
-      areaXpath.containsKey("area body xpath"));
-    String areaScrollableXpath = areaXpath.get("area scrollable xpath");
-    String areaBodyXpath = areaXpath.get("area body xpath");
-    //Check if area has scroller or not
-    try {
-      waitForVisibilityOfElementLocated(By.xpath(areaScrollableXpath), 2);
-      scrollInsideElement(areaScrollableXpath).to(Directions.BOTTOM).withLoop(scrollLoop).perform();
-    } catch (TimeoutException ex) {
-      LOG.info("The area does not have scroller. Continue...");
-    }
-    String conversationContent = getTextOfElement(By.xpath(areaBodyXpath));
-    informationOrElementXpathList = convertToTestDataWithNoSpecialChar(
-      informationOrElementXpathList);
-    if (objectName.contains("information")) {
-      informationOrElementXpathList.forEach(element -> {
-        Assert.assertFalse(
-          "Content in area located by " + areaBodyXpath + " contain information " + element,
-          conversationContent.contains(element));
-        LOG.info("Content in area {} does not contain information {} as expectation", areaBodyXpath,
-          element);
-      });
-    } else {
-      informationOrElementXpathList.forEach(element -> {
-        waitForInvisibilityOfElementLocated(By.xpath(element), 15);
-        LOG.info("Area located by \"{}\" not have \"{}\" \"{}\" as expectation", areaBodyXpath,
-          objectName, element);
-      });
-    }
   }
 
   public void waitForElementToBeSelected(By by, boolean isSelected, int timeout) {

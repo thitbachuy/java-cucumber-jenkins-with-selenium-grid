@@ -39,11 +39,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Assumptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.Assert;
 
 public class Hook {
 
@@ -87,7 +87,7 @@ public class Hook {
       SKIP_TEST_ON_ERROR = false;
     }
     if (isPartializedScenario && !tags.contains("@FIRST_CONDITIONAL_SCENARIO")) {
-      Assumptions.assumeFalse(SKIP_TEST_ON_ERROR,
+      Assert.assertFalse(SKIP_TEST_ON_ERROR,
         "The Scenario '" + scenario.getName() + "' is aborted as the previous scenario with tags '"
           + failedScenarios + "' ran failed or being skipped");
       LOG.info(
