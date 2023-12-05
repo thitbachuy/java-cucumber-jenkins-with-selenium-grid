@@ -111,9 +111,7 @@ public class DriverUtil {
                 chromeOptions.addArguments("disable-infobars");
                 chromeOptions.addArguments("--headless=new");
             }
-            if(TestDataLoader.getTestData("@TD:IsTrialPromo").equals("Yes")) {
-              chromeOptions.addExtensions(new File(modHeaderExtension.toAbsolutePath().toString()));
-            }
+
             chromeOptions.addArguments("--lang=en");
             chromeOptions.addArguments("--enable-javascript");
             chromeOptions.addArguments("--window-size=1920,1080");
@@ -219,9 +217,7 @@ public class DriverUtil {
         preferences.put("plugins.always_open_pdf_externally", true);
         preferences.put("profile.default_content_settings.popups", 0);
         preferences.put("download.default_directory", PATH_TO_DOWNLOAD_DIR);
-        if(TestDataLoader.getTestData("@TD:IsTrialPromo").equals("Yes")) {
-          chromeOptions.addExtensions(new File(modHeaderExtension.toAbsolutePath().toString()));
-        }
+
         chromeOptions.setExperimentalOption("prefs", preferences);
         chromeOptions.addArguments("--remote-allow-origins=*");
         chromeOptions.addArguments("--disable-gpu");
@@ -937,9 +933,6 @@ public class DriverUtil {
                 chromeOptions.addArguments("start-maximized");
                 chromeOptions.addArguments("disable-infobars");
                 chromeOptions.addArguments("--headless=new");
-            }
-            if(TestDataLoader.getTestData("@TD:IsTrialPromo").equals("Yes")) {
-              chromeOptions.addExtensions(new File(modHeaderExtension.toAbsolutePath().toString()));
             }
             chromeOptions.addArguments("--user-agent=" + userAgent);
             LOG.info("Add user-agent \"{}\" to chrome", userAgent);

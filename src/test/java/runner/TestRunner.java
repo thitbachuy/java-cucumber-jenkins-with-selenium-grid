@@ -5,7 +5,7 @@ import org.testng.annotations.DataProvider;
 @CucumberOptions(
   features = "src/test/java/features/test",
   glue = {"steps"},
-//        tags = "@Tiki",
+  tags = "@Tiki",
   plugin = {"pretty", "html:target/cucumber-report.html",
     "json:target/cucumber-report/cucumber.json", "junit:target/cucumber-report/cucumber.xml"}
 )
