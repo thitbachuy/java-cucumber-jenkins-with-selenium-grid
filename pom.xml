@@ -56,14 +56,16 @@
           <properties>
             <property>
               <name>dataproviderthreadcount</name>
-              <value>2</value>
+              <value>${dataproviderthreadcount}</value>
             </property>
           </properties>
           <parallel>methods</parallel>
-          <threadCount>4</threadCount>
-          <includes>
-            <include>**/TestRunner.java</include>
-          </includes>
+          <parallel>classesAndMethods</parallel>
+          <threadCount>10</threadCount>
+          <useUnlimitedThreads>true</useUnlimitedThreads>
+          <perCoreThreadCount>false</perCoreThreadCount>
+          <testFailureIgnore>true</testFailureIgnore>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
       <plugin>
