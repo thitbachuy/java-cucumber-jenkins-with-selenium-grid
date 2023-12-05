@@ -1,19 +1,15 @@
-package pages.dekstop;
+package pages;
 
 import config.BasePage;
 import config.DriverUtil;
-import core.ProcessElement;
 import java.util.Map;
-import locators.desktop.SearchLocators;
+import locators.SearchLocators;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
-import org.testng.asserts.Assertion;
 
 public class SearchPage extends BasePage {
-
-  public ProcessElement processElement;
 
   public SearchPage(RemoteWebDriver driver) {
     super(driver);
@@ -30,11 +26,14 @@ public class SearchPage extends BasePage {
 
   public void openUrl(String url) {
     DriverUtil.threadLocalActiveBrowsers.get().get("current").get(url);
+    LOG.info("Open the URL: {}",url);
   }
 
   public void verifyTitlePage(String title) {
     waitForPageLoaded();
-    boolean status = DriverUtil.threadLocalActiveBrowsers.get().get("current").getTitle().contains(title);
-    Assert.assertTrue(status,"Wrong page !");
+    boolean status = DriverUtil.threadLocalActiveBrowsers.get().get("current").getTitle()
+      .contains(title);
+    Assert.assertTrue(status, "Wrong page !");
+    LOG.info("Current title: {}",title);
   }
 }

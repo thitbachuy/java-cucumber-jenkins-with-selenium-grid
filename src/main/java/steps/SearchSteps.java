@@ -1,9 +1,9 @@
-package steps.desktop;
+package steps;
 
 import config.DriverUtil;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
-import pages.dekstop.SearchPage;
+import pages.SearchPage;
 
 public class SearchSteps {
 
