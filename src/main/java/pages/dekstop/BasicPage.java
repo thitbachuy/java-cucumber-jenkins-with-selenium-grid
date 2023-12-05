@@ -1,7 +1,6 @@
 package pages.dekstop;
 
 import static config.FilesUtils.readDocFile;
-import static config.FilesUtils.readPdfFile;
 import static config.FilesUtils.readTextFile;
 
 import config.BasePage;
@@ -422,8 +421,6 @@ public class BasicPage extends BasePage {
     String actualTexts = null;
     if (fileName.contains(".txt")) {
       actualTexts = readTextFile(filePath);
-    } else if (fileName.contains(".pdf")) {
-      actualTexts = readPdfFile(filePath);
     } else if (fileName.contains(".docx")) {
       actualTexts = readDocFile(filePath);
     }
