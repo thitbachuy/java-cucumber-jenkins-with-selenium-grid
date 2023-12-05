@@ -28,8 +28,6 @@ import java.util.regex.Pattern;
 import modal.Directions;
 import modal.LocatorType;
 import modal.TableInformation;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -790,20 +788,6 @@ public class BasePage {
       price = stringWithPrice;
     }
     return price;
-  }
-
-  public String generateRandomNumber(int length) {
-    String value = RandomStringUtils.randomNumeric(length);
-    TestDataLoader.setTestData("randomNumber", value);
-    return value;
-  }
-
-  public String getCurrentTimeInGermany() {
-    Clock clock = Clock.system(ZoneId.of("Europe/Berlin"));
-    ZonedDateTime now = ZonedDateTime.now(clock);
-    String currentTimeInGermany = now.toString().substring(11, 20);
-    LOG.info("Current time in Germany: {}", currentTimeInGermany);
-    return StringUtils.chop(currentTimeInGermany);
   }
 
   public List<String> getStringListOfElementVia(By locator, String valueType,

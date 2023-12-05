@@ -72,7 +72,7 @@ public class BasicSteps {
 
   @Then("the user sees page {string} with url {string} and title {string}")
   public void the_user_sees_page_string_with_url_string_and_title_string(String page, String url,
-      String title) {
+    String title) {
     basicPage.checkLandingPageWithUrlAndTitle(page, url, title);
   }
 
@@ -152,15 +152,10 @@ public class BasicSteps {
     basicPage.waitFor(Integer.parseInt(time)).minutes();
   }
 
-  @And("the user generates random number with length {int}")
-  public void the_user_generates_random_number_with_length(int length) {
-
-    basicPage.generateRandomNumber(length);
-  }
 
   @Given("the user generates a random email address {string} at server {string}")
   public void the_user_generates_a_random_email_address_string_at_server_string(String mailAddress,
-      String mailServer) {
+    String mailServer) {
 
     basicPage.generateRandomEmailAtServer(mailAddress, mailServer);
   }
@@ -189,7 +184,7 @@ public class BasicSteps {
         break;
       default:
         throw new CucumberException(
-            "Invalid time unit. The time unit should be the following: {'milliseconds', 'seconds', 'minutes', 'days'}");
+          "Invalid time unit. The time unit should be the following: {'milliseconds', 'seconds', 'minutes', 'days'}");
     }
   }
 
@@ -242,7 +237,7 @@ public class BasicSteps {
    */
   @When("the user {string} following information in the table {string} on {string}")
   public void the_user_string_following_information_in_the_table_string_on_string(String action,
-      String tableName, String context, DataTable dataTable) {
+    String tableName, String context, DataTable dataTable) {
 
     List<Map<String, String>> data = dataTable.asMaps(String.class, String.class);
     basicPage.verifyInformationInTable(action, tableName, context, data);
@@ -250,7 +245,7 @@ public class BasicSteps {
 
   @And("the user substring {string} from position {int} to {int} and saves as key {string}")
   public void the_user_substring_string_from_position_int_to_int_and_saves_as_key_string(
-      String string, int startIndex, int endIndex, String keyToSave) {
+    String string, int startIndex, int endIndex, String keyToSave) {
 
     basicPage.subStringAndSaveInDataRunTime(string, startIndex, endIndex, keyToSave);
   }
@@ -262,14 +257,14 @@ public class BasicSteps {
 
   @When("the user gets output of devtool console command {string} on current page")
   public void the_user_gets_output_of_devtool_console_command_string_on_current_page(
-      String command) {
+    String command) {
 
     basicPage.executeJsAndSaveValue(command);
   }
 
   @And("the user ensures that {string} {string} {string}")
   public void the_user_ensures_that_string_string_string(String value1, String comparison,
-      String value2) {
+    String value2) {
 
     basicPage.compareTwoStrings(value1, value2, comparison);
   }
@@ -281,7 +276,7 @@ public class BasicSteps {
 
   @Given("the user opens {string} browser with session alias {string}")
   public void the_user_opens_string_browser_with_session_alias_string(String browserName,
-      String alias) {
+    String alias) {
 
     DriverUtil.initializeBrowserWithSessionAlias(browserName, alias);
   }
