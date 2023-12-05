@@ -15,11 +15,9 @@ import io.cucumber.java.BeforeAll;
 import io.cucumber.java.Scenario;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,11 +34,7 @@ public class Hook {
   public static AppiumServer appiumServer;
   public static Date testStartDateTime = new Date();
   public static ThreadLocal<Boolean> threadLocalCookieAccepted = new ThreadLocal<>();
-  private static boolean SKIP_TEST_ON_ERROR = false;
-  private static boolean isPartializedScenario = false;
   public static final ThreadLocal<Map<String, String>> threadLocalDataSetInExecution = new ThreadLocal<>();
-  public static List<Scenario> listOfScenariosInExecution = new ArrayList<>();
-  public static List<Map<String, String>> listOfImportantDataInEachScenario = new ArrayList<>();
   public static final ThreadLocal<Integer> threadLocalCurrentStepNumber = new ThreadLocal<>();
 
   @BeforeAll
@@ -80,7 +74,9 @@ public class Hook {
     LOG.info("-------------------------------------------");
     LOG.info("END SCENARIO {}", scenario.getName());
     LOG.info("-------------------------------------------");
-    if(scenario.isFailed()) captureFullScreenShot(scenario);
+    if (scenario.isFailed()) {
+      captureFullScreenShot(scenario);
+    }
     closeDriver();
   }
 
