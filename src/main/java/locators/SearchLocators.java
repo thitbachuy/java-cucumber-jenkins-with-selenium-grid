@@ -1,4 +1,4 @@
-package locators.desktop;
+package locators;
 
 import java.util.HashMap;
 import java.util.Map;

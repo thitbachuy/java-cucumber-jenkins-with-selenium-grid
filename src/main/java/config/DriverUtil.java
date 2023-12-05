@@ -7,8 +7,6 @@ import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.ios.IOSDriver;
 import io.cucumber.core.exception.CucumberException;
 import java.io.File;
 import java.io.IOException;
@@ -19,9 +17,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.Executor;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -32,7 +27,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -49,24 +43,18 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import pages.android.AndroidBasicPage;
-import steps.Hook;
 
 public class DriverUtil {
 
   public static final String PATH_TO_DOWNLOAD_DIR =
     System.getProperty("user.home") + System.getProperty("file.separator") + "Downloads";
   private static RemoteWebDriver driver;
-  private static AndroidDriver androidDriver;
-  private static IOSDriver iosDriver;
   private static DesiredCapabilities dc;
   private static final Logger LOG = LogManager.getLogger(DriverUtil.class);
   public static final ThreadLocal<Map<String, RemoteWebDriver>> threadLocalActiveBrowsers = new ThreadLocal<>();
-  private static final String APPIUM_SERVER_LOCAL_HOST = "127.0.0.1";
   private static String proxyHost;
   private static String proxyPort;
   private static final String HUB_ENDPOINT = System.getenv("HUB_ENDPOINT");
-  public static ThreadLocal<RemoteWebDriver> threadLocalDriver = new ThreadLocal<>();
   public static final String FILE_SEPARATOR = System.getProperty("file.separator");
   static Path modHeaderExtension = Paths.get(
     System.getProperty("user.dir") + FILE_SEPARATOR + "resources" + FILE_SEPARATOR
@@ -74,18 +62,10 @@ public class DriverUtil {
 
   private DriverUtil() {
   }
+
   public static RemoteWebDriver getDriver() {
     return threadLocalActiveBrowsers.get().get("current");
   }
-
-  public static AndroidDriver getAndroidDriver() {
-    return androidDriver;
-  }
-
-  public static IOSDriver getIosDriver() {
-    return iosDriver;
-  }
-
   /* DOCKER DRIVER */
 
   public static RemoteWebDriver initDockerChrome(boolean incognito) {
@@ -568,129 +548,6 @@ public class DriverUtil {
     LOG.info("Close unused driver successfully!");
   }
 
-  public static void initAndroidDriver() {
-    String startADB;
-    String appiumSettingsStop;
-    String appiumSettingsClear;
-    switch (Hook.platform) {
-      case "android-webApp":
-        break;
-      case "android-nativeApp":
-        startADB = "adb devices";
-        appiumSettingsClear =
-          "adb -s " + System.getProperty("deviceUDID") + " shell pm clear io.appium.settings";
-        appiumSettingsStop =
-          "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop io.appium.settings";
-        executeSettingAdbAndAppium(startADB, appiumSettingsStop, appiumSettingsClear);
-        break;
-      case "android-ssh":
-        String formatSSH = "ssh pascalkallenborn@%s " + APPIUM_SERVER_LOCAL_HOST + "\"%s\"";
-        startADB = String.format(formatSSH, "adb devices");
-        appiumSettingsStop = String.format(formatSSH,
-          "adb -s " + System.getProperty("deviceUDID") + " shell pm clear io.appium.settings");
-        appiumSettingsClear = String.format(formatSSH,
-          "adb -s " + System.getProperty("deviceUDID") + " shell am force-stop io.appium.settings");
-        executeSettingAdbAndAppium(startADB, appiumSettingsStop, appiumSettingsClear);
-        break;
-      default:
-        throw new CucumberException("please choose a valid android platform");
-    }
-    //Set capabilities
-    DesiredCapabilities caps = new DesiredCapabilities();
-    caps.setCapability("udid", System.getProperty("deviceUDID"));
-    caps.setCapability("deviceName", System.getProperty("deviceName"));
-    caps.setCapability("platformName", "Android");
-    caps.setCapability("platformVersion", System.getProperty("platformVersion"));
-    caps.setCapability("automationName", "UiAutomator2");
-    caps.setCapability("noReset", "true");
-    caps.setCapability("newCommandTimeout", 10000);
-    caps.setCapability("adbExecTimeout", 100000);
-    if (Hook.platform.equals("android-webApp")) {
-      if (System.getProperty("platformVersion").contains("13")) {
-        AdbShellCommand.clearApplicationDataOfDevice(System.getProperty("deviceUDID"),
-          "com.android.chrome");
-        startAndroidDriver(Hook.appiumServer.getRemoteAppiumUrl(), caps);
-        //Open url by adb shell command to load the web view
-        AdbShellCommand.openUrl(System.getProperty("deviceUDID"), "https://www.google.com");
-        //Handle popup if it appears
-        AndroidBasicPage androidBasicPage = new AndroidBasicPage(androidDriver);
-        androidBasicPage.declineChromeNotificationPopup();
-        //Wait and switch to web view context
-        androidBasicPage.waitForBothNativeAndWebViewContextAvailable(10, 1);
-        androidBasicPage.switchToAnotherContext("WEBVIEW");
-      } else {
-        caps.setCapability("browserName", Hook.browser);
-        startAndroidDriver(Hook.appiumServer.getRemoteAppiumUrl(), caps);
-      }
-    } else {
-      startAndroidDriver(Hook.appiumServer.getRemoteAppiumUrl(), caps);
-    }
-    setCurrentDriver(androidDriver);
-    androidDriver.rotate(ScreenOrientation.PORTRAIT);
-  }
-
-  private static void startAndroidDriver(URL remoteAppiumUrl, DesiredCapabilities caps) {
-    try {
-      androidDriver = new AndroidDriver(remoteAppiumUrl, caps);
-    } catch (Exception e) {
-      throw new CucumberException("Fail to initialize android driver due to: " + e.getMessage());
-    }
-  }
-
-  private static void executeSettingAdbAndAppium(String startADB, String appiumSettingsStop,
-    String appiumSettingsClear) {
-    //Before actually firing up the AndroidDriver, let's make sure ADB daemon is running
-    LOG.info("Making sure ADB daemon is started...");
-    DefaultExecutor shell = new DefaultExecutor();
-    int exitValue = 9999;
-
-    try {
-      exitValue = shell.execute(CommandLine.parse(startADB));
-    } catch (IOException ignored) {
-    }
-    if (exitValue > 0) {
-      throw new CucumberException("Cannot start ADB daemon!");
-    }
-
-    //Re-starting appium settings on the device (it can hang up sometimes)
-    try {
-      exitValue = shell.execute(CommandLine.parse(appiumSettingsStop));
-    } catch (IOException ignored) {
-    }
-    if (exitValue > 0) {
-      throw new CucumberException("Cannot stop Appium settings on the device!");
-    }
-
-    try {
-      exitValue = shell.execute(CommandLine.parse(appiumSettingsClear));
-    } catch (IOException ignored) {
-    }
-    if (exitValue > 0) {
-      throw new CucumberException("Cannot clear Appium settings data on the device!");
-    }
-  }
-
-  public static void initIosDriver() {
-    DesiredCapabilities caps = new DesiredCapabilities();
-    caps.setCapability("udid", System.getProperty("deviceUDID"));
-    caps.setCapability("deviceName", System.getProperty("deviceName"));
-    caps.setCapability("platformName", "iOS");
-    caps.setCapability("platformVersion", System.getProperty("platformVersion"));
-    caps.setCapability("automationName", "XCUITest");
-    caps.setCapability("rotatable", true);
-    caps.setCapability("newCommandTimeout", 10000);
-    if (Hook.platform.equals("ios-webApp")) {
-      caps.setCapability("browserName", Hook.browser);
-      caps.setCapability("startIWDP", true);
-    }
-    try {
-      iosDriver = new IOSDriver(Hook.appiumServer.getRemoteAppiumUrl(), caps);
-    } catch (Exception e) {
-      throw new CucumberException("Fail to initialize ios driver due to: " + e.getMessage());
-    }
-    setCurrentDriver(iosDriver);
-    iosDriver.rotate(ScreenOrientation.PORTRAIT);
-  }
 
   public static void setCurrentDriver(RemoteWebDriver remoteWebDriver) {
     threadLocalActiveBrowsers.get().put("current", remoteWebDriver);

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.core.exception.CucumberException;
 import java.io.File;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -84,22 +83,8 @@ public class TestDataLoader {
       int end = key.length();
       value = threadLocalTestDataRuntime.get().get(key.substring(4, end));
       checkTestData(key, value);
-    } else if (key.startsWith("@date:") || key.equals("@DateAsValue") || key.equals(
-      "randomNumberUsingDateTime")) {
-      value = DateUtil.getTestDataDateValue(key, value);
-    } else if (key.startsWith("@dateAndLocaleEnglish:")) {
-      value = calculateTimestampWithFormat(key.substring(22), Locale.ENGLISH);
-//          logger.info("value of Date : " + value);
-//          logger.info("Loading \"" + value + "\" as \"" + key + "\" from Test Data Set");
     } else if (key.equals("@RandomFirstName") || key.equals("@RandomLastName")) {
       value = getTestDataNameValue(key, value);
-    } else if (key.equals("@BusinessHoursTest") || key.equals("@BusinessHoursPast")) {
-      String timeZone = "Europe/Berlin";
-      LocalTime now = LocalTime.now(ZoneId.of(timeZone));
-      DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-      value = key.equals("@BusinessHoursTest") ? tf.format(
-        now.plusMinutes(Integer.parseInt(TestDataLoader.getTestData("@TD:businessHoursExtra"))))
-        + "Z" : tf.format(now.minusMinutes(2)) + "Z";
     } else {
       value = key;
     }

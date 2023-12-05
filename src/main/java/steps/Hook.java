@@ -5,7 +5,6 @@ import static config.DriverUtil.threadLocalActiveBrowsers;
 
 import com.assertthat.selenium_shutterbug.core.Capture;
 import com.assertthat.selenium_shutterbug.core.Shutterbug;
-import config.AppiumServer;
 import config.DriverUtil;
 import config.TestDataLoader;
 import io.cucumber.java.After;
@@ -16,7 +15,6 @@ import io.cucumber.java.Scenario;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -31,21 +29,10 @@ public class Hook {
   public static String browser = "chrome";
   public static String testedEnv = "uat";
   public static String platform = "desktop";
-  public static AppiumServer appiumServer;
-  public static Date testStartDateTime = new Date();
   public static ThreadLocal<Boolean> threadLocalCookieAccepted = new ThreadLocal<>();
   public static final ThreadLocal<Map<String, String>> threadLocalDataSetInExecution = new ThreadLocal<>();
-  public static final ThreadLocal<Integer> threadLocalCurrentStepNumber = new ThreadLocal<>();
-
   @BeforeAll
-  public static void initializeAppiumServer() {
-    if (platform.contains("android") || platform.contains("ios")) {
-      LOG.info("-------------------------------------------");
-      LOG.info("START APPIUM SERVER");
-      LOG.info("-------------------------------------------");
-      appiumServer = appiumServer == null ? new AppiumServer() : appiumServer;
-      appiumServer.start();
-    }
+  public static void beforeAll() {
   }
 
   @Before
@@ -64,7 +51,6 @@ public class Hook {
     LOG.info("START SCENARIO '{}'", scenario.getName());
     LOG.info("With Tags: {}", tags);
     LOG.info("-------------------------------------------");
-    threadLocalCurrentStepNumber.set(0);
     TestDataLoader abc = new TestDataLoader();
   }
 
@@ -100,15 +86,7 @@ public class Hook {
 
 
   @AfterAll
-  public static void afterFeature() {
-    if (platform.contains("android") || platform.contains("ios")) {
-      LOG.info("-------------------------------------------");
-      LOG.info("STOP APPIUM SERVER");
-      LOG.info("-------------------------------------------");
-      LOG.info(threadLocalDataSetInExecution.get().toString());
-      appiumServer = appiumServer == null ? new AppiumServer() : appiumServer;
-      appiumServer.stop();
-    }
+  public static void AfterAll() {
   }
 
   public static void captureFullScreenShot(Scenario message) {
