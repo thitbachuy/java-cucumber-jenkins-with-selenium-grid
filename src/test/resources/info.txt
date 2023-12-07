@@ -2,26 +2,9 @@
 store knowledge you might need
 
         1 git "put in git clone here"
-        2 mvn clean compile
-        3 mvn test -Denv=XXX -Dcugitcumber.filter.tags=@XXX
+        2 run cmd line
 
-        mvn test -Dbrowser=chrome -Dcucumber.filter.tags=@SMOKEdesktopSIT
-        mvn clean verify -Dcucumber.filter.tags=@SMOKEdesktopSIT -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
-
-        loakl git
-        lokale Jenkins -> check out git -> trigger tests
-
-        git init --bare (creating empty directory/repo to store git data inside)
-
-        git clone (empty direcotsy)
-
+mvn test -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
 mvn clean verify -Dcucumber.filter.tags=@Google -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=edge -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=firefox -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop
 
-----Run Mobile Test---
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=android-webApp
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=chrome -DexecutingEnv=test -DtestedEnv=uat -Dplatform=android-nativeApp
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=safari -DexecutingEnv=test -DtestedEnv=uat -Dplatform=ios-webApp
-mvn clean verify -Dcucumber.filter.tags=@testAge -Dbrowser=safari -DexecutingEnv=test -DtestedEnv=uat -Dplatform=ios-nativeApp
-
+mvn clean verify -Dbrowser=firefox -DexecutingEnv=test -DtestedEnv=sit -Dplatform=desktop

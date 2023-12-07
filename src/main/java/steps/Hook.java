@@ -26,9 +26,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class Hook {
 
   private static final Logger LOG = LogManager.getLogger(Hook.class);
-  public static String browser = "chrome";
-  public static String testedEnv = "uat";
-  public static String platform = "desktop";
+  public static String browser = System.getProperty("browser");
+  public static String testedEnv = System.getProperty("testedEnv");
+  public static String platform = System.getProperty("platform");
   public static ThreadLocal<Boolean> threadLocalCookieAccepted = new ThreadLocal<>();
   public static final ThreadLocal<Map<String, String>> threadLocalDataSetInExecution = new ThreadLocal<>();
   @BeforeAll
