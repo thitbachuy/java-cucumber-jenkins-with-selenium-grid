@@ -1,5 +1,5 @@
 pipeline {
-    agent any  // This specifies that the pipeline can run on any available agent
+     docker { image 'node:20.11.1-alpine3.19' }
 
     stages {
          stage('Checkout') {
@@ -13,7 +13,7 @@ pipeline {
         stage('Create containers') {
             steps {
                 echo 'Creating containers...'
-                sh 'sudo docker-compose up --build'
+                sh 'docker-compose up --build'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
@@ -28,7 +28,7 @@ pipeline {
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
-                sh 'sudo docker-compose down'
+                sh 'docker-compose down'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
