@@ -25,12 +25,12 @@ pipeline {
             }
         }
 
-        stage('Create containers') {
+        stage('Tear down') {
             steps {
-                echo 'Creating containers...'
+                echo 'Tear down...'
                 sh 'docker-compose -f docker-compose.yml down'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
-         }
+        }
     }
 }
