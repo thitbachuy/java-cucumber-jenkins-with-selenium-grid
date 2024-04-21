@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        docker { image 'node:20.11.1-alpine3.19' }
+        docker {
+            label 'docker'
+            image 'node:20.11.1-alpine3.19'
+        }
      }  // This specifies that the pipeline can run on any available agent
 
     stages {
