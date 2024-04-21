@@ -54,7 +54,7 @@ public class DriverUtil {
   public static final ThreadLocal<Map<String, RemoteWebDriver>> threadLocalActiveBrowsers = new ThreadLocal<>();
   private static String proxyHost;
   private static String proxyPort;
-  private static final String HUB_ENDPOINT = System.getenv("HUB_ENDPOINT");
+  private static final String HUB_ENDPOINT = "selenium-hub:4444";
   public static final String FILE_SEPARATOR = System.getProperty("file.separator");
   static Path modHeaderExtension = Paths.get(
     System.getProperty("user.dir") + FILE_SEPARATOR + "resources" + FILE_SEPARATOR
@@ -492,8 +492,6 @@ public class DriverUtil {
     switch (browser) {
       case "chromeGCP":
         driver = initDockerChrome(incognito);
-        setUpUserAgentOfDriver(driver);
-        driver = initChromeDockerUserAgent(TestDataLoader.getTestData("@TD:user-agent"), incognito);
         break;
       case "chromeHeadless":
         driver = initChromeHeadless(incognito, proxy);
