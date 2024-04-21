@@ -2,9 +2,18 @@ pipeline {
     agent any  // This specifies that the pipeline can run on any available agent
 
     stages {
-        stage('Build') {
+         stage('Checkout') {
+              steps {
+                  echo 'Checkout...'
+                  checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'jenkins-user-github', url: 'https://github.com/thitbachuy/selenium-java-02082023.git']]])
+                  sh "ls -lart ./*"
+              }
+          }
+
+        stage('Create containers') {
             steps {
-                echo 'Building...'
+                echo 'Creating containers...'
+                sh 'docker-compose -f docker-compose.yml up'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
@@ -16,11 +25,12 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Create containers') {
             steps {
-                echo 'Deploying...'
-                // Insert your deployment commands here, e.g., script to deploy to a server
+                echo 'Creating containers...'
+                sh 'docker-compose -f docker-compose.yml down'
+                // Insert your build commands here, e.g., 'mvn clean install'
             }
-        }
+         }
     }
 }
