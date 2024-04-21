@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            label 'docker'
-            image 'node:20.11.1-alpine3.19'
-        }
-     }  // This specifies that the pipeline can run on any available agent
+    agent any  // This specifies that the pipeline can run on any available agent
 
     stages {
          stage('Checkout') {
