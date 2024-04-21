@@ -13,7 +13,7 @@ pipeline {
         stage('Create containers') {
             steps {
                 echo 'Creating containers...'
-                sh 'docker-compose -f docker-compose.yml up'
+                sh 'docker-compose up --build'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
@@ -28,7 +28,7 @@ pipeline {
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
-                sh 'docker-compose -f docker-compose.yml down'
+                sh 'docker-compose down'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
