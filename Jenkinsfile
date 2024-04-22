@@ -10,11 +10,6 @@ pipeline {
               }
           }
 
-         stage('Initialize'){
-                def dockerHome = tool 'myDocker'
-                env.PATH = "${dockerHome}/bin:${env.PATH}"
-            }
-
         stage('Create containers') {
             agent {
                docker { image 'alpinelinux/docker-cli' }
