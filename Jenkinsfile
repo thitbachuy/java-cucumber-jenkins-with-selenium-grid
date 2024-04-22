@@ -1,7 +1,10 @@
 pipeline {
     agent {
-         docker { image 'alpinelinux/docker-cli' }
+         docker {
+            label 'docker'
+            image 'alpinelinux/docker-cli'
          }
+    }
 
     stages {
          stage('Checkout') {
