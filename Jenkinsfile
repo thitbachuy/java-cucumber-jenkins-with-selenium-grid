@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-         docker {
-            label 'docker'
-            image 'alpinelinux/docker-cli'
-         }
-    }
+    agent none
 
     stages {
          stage('Checkout') {
@@ -16,6 +11,9 @@ pipeline {
           }
 
         stage('Create containers') {
+            agent {
+               docker { image 'alpinelinux/docker-cli' }
+            }
             steps {
                 echo 'Creating containers...'
                 sh 'docker-compose up --build'
