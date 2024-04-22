@@ -1,5 +1,7 @@
 pipeline {
-    agent any  // This specifies that the pipeline can run on any available agent
+    agent {
+         docker { image 'alpinelinux/docker-cli' }
+         }
 
     stages {
          stage('Checkout') {
