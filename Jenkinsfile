@@ -12,6 +12,9 @@ pipeline {
 
         stage('Create containers') {
             steps {
+                  agent {
+                     docker { image 'alpinelinux/docker-cli' }
+                  }
                 echo 'Creating containers...'
                 sh 'docker-compose up --build'
                 // Insert your build commands here, e.g., 'mvn clean install'
