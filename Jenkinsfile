@@ -11,7 +11,7 @@ pipeline {
               }
           }
 
-        stage('Create containers') {
+        stage('Create containers and run test') {
             steps {
                 echo 'Creating containers...'
                 sh 'docker-compose up --build --abort-on-container-exit'
@@ -19,9 +19,10 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Export result') {
             steps {
-                echo 'Testing...'
+                echo 'exporting...'
+              sh 'cp /opt/target /target'
                 // Insert your test commands here, e.g., 'mvn test'
             }
         }
