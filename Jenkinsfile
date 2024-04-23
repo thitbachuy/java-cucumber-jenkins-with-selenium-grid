@@ -31,7 +31,7 @@ pipeline {
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
-                sh 'docker-compose down'
+                sh 'docker-compose -d down'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
