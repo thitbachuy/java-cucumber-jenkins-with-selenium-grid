@@ -12,26 +12,27 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#
-#   edge:
-#     image: selenium/node-edge:4.19.1-20240402
-#     shm_size: 2gb
-#     depends_on:
-#       - selenium-hub
-#     environment:
-#       - SE_EVENT_BUS_HOST=selenium-hub
-#       - SE_EVENT_BUS_PUBLISH_PORT=4442
-#       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#
-#   firefox:
-#     image: selenium/node-firefox:4.19.1-20240402
-#     shm_size: 2gb
-#     depends_on:
-#       - selenium-hub
-#     environment:
-#       - SE_EVENT_BUS_HOST=selenium-hub
-#       - SE_EVENT_BUS_PUBLISH_PORT=4442
-#       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  #
+  #   edge:
+  #     image: selenium/node-edge:4.19.1-20240402
+  #     shm_size: 2gb
+  #     depends_on:
+  #       - selenium-hub
+  #     environment:
+  #       - SE_EVENT_BUS_HOST=selenium-hub
+  #       - SE_EVENT_BUS_PUBLISH_PORT=4442
+  #       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+  #
+  #   firefox:
+  #     image: selenium/node-firefox:4.19.1-20240402
+  #     shm_size: 2gb
+  #     depends_on:
+  #       - selenium-hub
+  #     environment:
+  #       - SE_EVENT_BUS_HOST=selenium-hub
+  #       - SE_EVENT_BUS_PUBLISH_PORT=4442
+  #       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
 
   selenium-hub:
     image: selenium/hub:4.19.1-20240402
@@ -41,7 +42,10 @@ services:
       - "4443:4443"
       - "4444:4444"
 
+
   testing:
+    depends_on:
+      - chrome
     build: .
     container_name: testing
     volumes:
