@@ -14,7 +14,7 @@ pipeline {
         stage('Create containers') {
             steps {
                 echo 'Creating containers...'
-                sh 'docker-compose up --build'
+                sh 'docker-compose up --build ----abort-on-container-exit'
                 // Insert your build commands here, e.g., 'mvn clean install'
             }
         }
