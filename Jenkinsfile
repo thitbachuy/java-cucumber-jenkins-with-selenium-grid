@@ -22,7 +22,7 @@ pipeline {
         stage('Export result') {
             steps {
                 echo 'exporting...'
-              sh 'cp /opt/target /target'
+              sh 'cp ./opt/target /target'
                 // Insert your test commands here, e.g., 'mvn test'
             }
         }
