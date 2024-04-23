@@ -11,9 +11,9 @@ pipeline {
           }
 
         stage('Create containers') {
-           // agent {
-           //           docker { image 'alpinelinux/docker-cli' }
-           //  }
+           agent {
+                     docker { image 'alpinelinux/docker-cli' }
+            }
             steps {
                 echo 'Creating containers...'
                 sh 'docker-compose up --build'
