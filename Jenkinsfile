@@ -10,12 +10,6 @@ pipeline {
                   sh "ls -lart ./*"
               }
           }
-         stage('clean environment') {
-              steps {
-                  echo 'cleaning...'
-                  sh 'docker-compose down'
-              }
-          }
 
         stage('Create containers') {
             steps {
