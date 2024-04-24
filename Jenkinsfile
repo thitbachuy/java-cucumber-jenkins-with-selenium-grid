@@ -6,9 +6,10 @@ pipeline {
     extendedChoice(
       name: 'Env',
       type: 'PT_SINGLE_SELECT',
-      value: ['DEV', 'UAT', 'PROD'],
+      value: 'DEV,UAT,PROD',
       description: 'Passing the Environment',
       defaultValue: 'UAT',
+      multiSelectDelimiter: ',',
       quoteValue: false
     )
   }
