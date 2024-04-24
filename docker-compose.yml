@@ -45,8 +45,7 @@ services:
 
   testing:
     depends_on:
-      chrome:
-        condition: service_healthy
+      - chrome
     build: .
     container_name: testing
     # volumes:
