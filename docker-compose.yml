@@ -46,6 +46,7 @@ services:
   testing:
     depends_on:
       - chrome
+      - selenium-hub
     build: .
     container_name: testing
     # volumes:
