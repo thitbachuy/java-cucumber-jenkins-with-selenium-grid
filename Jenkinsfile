@@ -14,7 +14,10 @@ pipeline {
   }
     stages {
         stage('Select Environment') {
+           steps {
+                  echo 'Checkout...'
                     echo "Selected environment: ${params.Env}"
+           }
             }
          stage('Checkout') {
               steps {
