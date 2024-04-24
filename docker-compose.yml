@@ -50,4 +50,4 @@ services:
     build: .
     container_name: testing
     volumes:
-      - ./target:./opt/target/
+      - ./testing/app/target:./app/target
