@@ -2,7 +2,20 @@ pipeline {
       agent {
                      docker { image 'alpinelinux/docker-cli' }
             }
+    parameters {
+    extendedChoice(
+      name: 'Env',
+      type: 'PT_SINGLE_SELECT',
+      choices: ['DEV', 'UAT', 'PROD'],
+      description: 'Passing the Environment',
+      defaultValue: 'UAT',
+      quoteValue: false
+    )
+  }
     stages {
+        stage('Select Environment') {
+                    echo "Selected environment: ${params.Env}"
+            }
          stage('Checkout') {
               steps {
                   echo 'Checkout...'
