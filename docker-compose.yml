@@ -48,5 +48,5 @@ services:
       - chrome
     build: .
     container_name: testing
-    volumes:
-      - ./app/target/:/opt/target/
+    # volumes:
+    #   - ./app/target/:/opt/target/
