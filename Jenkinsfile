@@ -6,7 +6,7 @@ pipeline {
     extendedChoice(
       name: 'Env',
       type: 'PT_SINGLE_SELECT',
-      choices: ['DEV', 'UAT', 'PROD'],
+      value: ['DEV', 'UAT', 'PROD'],
       description: 'Passing the Environment',
       defaultValue: 'UAT',
       quoteValue: false
