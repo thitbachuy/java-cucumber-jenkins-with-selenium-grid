@@ -49,5 +49,5 @@ services:
       - selenium-hub
     build: .
     container_name: testing
-    # volumes:
-    #   - ./app/target/:/opt/target/
+    volumes:
+      - ./target/:/opt/target/
