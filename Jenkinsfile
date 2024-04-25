@@ -38,33 +38,13 @@ pipeline {
       }
     }
 
-    stage('Build') {
-            steps {
-                script {
-                    // Split the OPTIONS parameter into an array of values
-                    def optionsList = params.TAGGING.split(',')
-                    
-                    // Add a specific character to each value
-                    def modifiedOptionsList = optionsList.collect { it + '@' } // For example, adding an "@" to each value
-                    
-                    // Join the modified options back into a single string
-                    def modifiedOptions = modifiedOptionsList.join(',')
-                    
-                  
-                }
-                echo "optionsList...${optionsList}"
-            }
-        }
     stage('Create containers and run test') {
       steps {
         script{
           echo 'Creating containers...'
           echo "BROWSER: ${params.BROWSER}"
           echo "TAGGING: ${params.TAGGING}"
-          def optionsList = ${params.TAGGING}.split(',')
-          def modifiedOptionsList = optionsList.collect { '@' + it }
-          def modifiedOptions = modifiedOptionsList.join(',')
-          sh "docker-compose up --build --abort-on-container-exit --env TAGGING='${modifiedOptions}'"
+          sh 'docker-compose up --build --abort-on-container-exit'
           // Insert your build commands here, e.g., 'mvn clean install'
         }
       }
