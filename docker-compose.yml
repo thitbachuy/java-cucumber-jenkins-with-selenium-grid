@@ -51,7 +51,10 @@ services:
     depends_on:
       - chrome
       - selenium-hub
-    build: .
+    build:
+      context: .
+      args:
+        - env_browser_param=${BROWSER}
     container_name: testing
     volumes:
       - ./app/target:/opt/target
