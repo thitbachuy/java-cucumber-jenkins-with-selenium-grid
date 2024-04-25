@@ -65,7 +65,5 @@ services:
       - selenium-hub
     build: .
     container_name: testing
-    environment:
-      - JAVA_OPTS="-Dwebdriver.chrome.verboseLogging=true"
     volumes:
       - ./app/target:/opt/target
