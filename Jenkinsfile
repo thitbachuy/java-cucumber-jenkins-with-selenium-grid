@@ -43,7 +43,7 @@ pipeline {
         echo 'Creating containers...'
         echo "BROWSER: ${params.BROWSER}"
         echo "TAGGING: ${params.TAGGING}"
-        def optionsList = params.TAGGING.split(',')
+        def optionsList = ${params.TAGGING}.split(',')
         def modifiedOptionsList = optionsList.collect { '@' + it }
         def modifiedOptions = modifiedOptionsList.join(',')
         sh "docker-compose up --build --abort-on-container-exit --env TAGGING='${modifiedOptions}'"
