@@ -13,7 +13,7 @@ pipeline {
       visibleItemCount: 3,
       multiSelectDelimiter: ',',
       quoteValue: false
-    ),
+    )
     extendedChoice(
       name: 'TAGGING',
       type: 'PT_CHECKBOX',
