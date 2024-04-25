@@ -55,7 +55,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-        - env_browser_param=${params.BROWSER}
+        - env_browser_param=${BROWSER}
     container_name: testing
     volumes:
       - ./app/target:/opt/target
