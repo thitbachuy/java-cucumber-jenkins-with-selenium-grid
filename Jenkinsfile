@@ -38,6 +38,23 @@ pipeline {
       }
     }
 
+    stage('Build') {
+            steps {
+                script {
+                    // Split the OPTIONS parameter into an array of values
+                    def optionsList = params.TAGGING.split(',')
+                    
+                    // Add a specific character to each value
+                    def modifiedOptionsList = optionsList.collect { it + '@' } // For example, adding an "@" to each value
+                    
+                    // Join the modified options back into a single string
+                    def modifiedOptions = modifiedOptionsList.join(',')
+                    
+                  
+                }
+                echo "optionsList...${optionsList}"
+            }
+        }
     stage('Create containers and run test') {
       steps {
         script{
