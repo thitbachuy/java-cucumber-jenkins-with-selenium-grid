@@ -52,7 +52,6 @@ pipeline {
       steps {
         echo 'exporting...'
         sh 'docker cp testing:/opt/target /opt/target'
-        sh 'cp r /opt/target .'
         // Insert your test commands here, e.g., 'mvn test'
       }
     }
