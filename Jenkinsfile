@@ -33,7 +33,7 @@ pipeline {
       steps {
         echo 'Creating containers...'
         echo "BROWSER: ${params.BROWSER}"
-        sh "docker-compose up --abort-on-container-exit --build-arg BROWSER=${params.BROWSER}"
+        sh 'BROWSER=${params.BROWSER} docker-compose up --build --abort-on-container-exit'
         // Insert your build commands here, e.g., 'mvn clean install'
       }
     }
