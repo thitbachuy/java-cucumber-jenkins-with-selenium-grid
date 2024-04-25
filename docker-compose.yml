@@ -38,7 +38,7 @@ services:
   selenium-hub:
     image: selenium/hub:4.19.1-20240402
     container_name: selenium-hub
-     environment:
+    environment:
       - SE_ENABLE_TRACING=true
     ports:
       - "4442:4442"
