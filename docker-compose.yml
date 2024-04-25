@@ -58,7 +58,7 @@ services:
         - Browser=${BROWSER}
         - Tagging=${TAGGING}
     container_name: testing
-    volumes:
-      - ./target:target
+#     volumes:
+#       - target:/app/automation_testing/target
 # volumes:
 #   target:
