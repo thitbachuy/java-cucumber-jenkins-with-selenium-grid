@@ -15,6 +15,7 @@ services:
       - SE_ENABLE_TRACING=true
       - SE_OTEL_TRACES_EXPORTER=otlp
       - SE_OTEL_EXPORTER_ENDPOINT=http://jaeger:4317
+      - JAVA_OPTS="-Dwebdriver.chrome.verboseLogging=true"
 
   #
   #   edge:
@@ -46,6 +47,7 @@ services:
       - SE_ENABLE_TRACING=true
       - SE_OTEL_TRACES_EXPORTER=otlp
       - SE_OTEL_EXPORTER_ENDPOINT=http://jaeger:4317
+      - JAVA_OPTS="-Dwebdriver.chrome.verboseLogging=true"
     ports:
       - "4442:4442"
       - "4443:4443"
@@ -63,5 +65,7 @@ services:
       - selenium-hub
     build: .
     container_name: testing
+    environment:
+      - JAVA_OPTS="-Dwebdriver.chrome.verboseLogging=true"
     volumes:
       - ./app/target:/opt/target
