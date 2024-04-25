@@ -8,7 +8,7 @@ pipeline {
     extendedChoice(
       name: 'BROWSER',
       type: 'PT_SINGLE_SELECT',
-      value: 'Chrome,ChromeGCP,Firefox',
+      value: 'ChromeGCP,Chrome,Firefox',
       description: 'Please select the browser that you want to run',
       visibleItemCount: 3,
       multiSelectDelimiter: ',',
@@ -33,7 +33,7 @@ pipeline {
       steps {
         echo 'Creating containers...'
         echo "BROWSER: ${params.BROWSER}"
-        sh 'docker-compose up --build --abort-on-container-exit --build-arg BROWSER=${params.BROWSER}'
+        sh "docker-compose up --build --abort-on-container-exit --build-arg BROWSER=${params.BROWSER}"
         // Insert your build commands here, e.g., 'mvn clean install'
       }
     }
