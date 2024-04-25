@@ -6,10 +6,10 @@ pipeline {
   }
   parameters {
     extendedChoice(
-      name: 'environment',
+      name: 'BROWSER',
       type: 'PT_SINGLE_SELECT',
-      value: 'DEV,UAT,PROD',
-      description: 'Please select the environment that you want to run',
+      value: 'Chrome,ChromeGCP,Firefox',
+      description: 'Please select the browser that you want to run',
       visibleItemCount: 3,
       multiSelectDelimiter: ',',
       quoteValue: false
