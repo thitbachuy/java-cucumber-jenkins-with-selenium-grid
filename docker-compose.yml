@@ -53,7 +53,8 @@ services:
       - selenium-hub
     build:
       context: .
-      args:
+      dockerfile: Dockerfile
+    environment:
         - env_browser_param=${params.BROWSER}
     container_name: testing
     volumes:
