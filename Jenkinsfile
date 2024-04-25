@@ -32,7 +32,7 @@ pipeline {
     stage('Create containers and run test') {
       steps {
         echo 'Creating containers...'
-        sh 'docker-compose up --build --abort-on-container-exit'
+        sh 'docker-compose up --build --abort-on-container-exit --build-arg BROWSER=${params.BROWSER}'
         // Insert your build commands here, e.g., 'mvn clean install'
       }
     }
