@@ -45,7 +45,7 @@ pipeline {
         echo "TAGGING: ${params.TAGGING}"
         listTagging = params.TAGGING.split(',')
         finalList = ''
-        for((String value :listTagging)) finalList += "@$value"
+        for((String value :listTagging)) finalList + "@$value"
         echo "finalList: $finalList"
         sh 'docker-compose up --build --abort-on-container-exit'
         // Insert your build commands here, e.g., 'mvn clean install'
