@@ -54,7 +54,7 @@ services:
     build:
       context: .
       args:
-        - env_browser_param=${BROWSER}
+        - env_browser_param=${params.BROWSER}
     container_name: testing
     volumes:
       - ./app/target:/opt/target
