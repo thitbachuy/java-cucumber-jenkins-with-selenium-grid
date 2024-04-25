@@ -11,4 +11,4 @@ ENV env_browser_param chromeGCP
 COPY src /apps/${app_name}/src
 COPY pom.xml /apps/${app_name}
 
-ENTRYPOINT mvn test -Dcucumber.filter.tags=@Tiki -Dcucumber.filter -Dbrowser=${env_browser_param} -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
+ENTRYPOINT mvn test -Dcucumber.filter.tags=@Tiki -Dcucumber.filter -Dbrowser=${params.environment} -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
