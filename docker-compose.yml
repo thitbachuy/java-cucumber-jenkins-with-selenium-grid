@@ -51,6 +51,3 @@ services:
     container_name: testing
     volumes:
       - ./app/target:/opt/target
-volumes:
-  target:
-    external: true
