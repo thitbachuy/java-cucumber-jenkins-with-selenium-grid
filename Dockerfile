@@ -5,9 +5,6 @@ ARG app_name=automation_testing
 WORKDIR /apps/${app_name}
 RUN chmod -R 777 /apps/${app_name}
 
-# ENV env_browser_param chromeGCP
-# ARG env_browser_param
-
 #Copy source code and pom file.
 COPY src /apps/${app_name}/src
 COPY pom.xml /apps/${app_name}

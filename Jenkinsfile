@@ -8,7 +8,7 @@ pipeline {
     extendedChoice(
       name: 'BROWSER',
       type: 'PT_SINGLE_SELECT',
-      value: 'ChromeGCP,Chrome,Firefox',
+      value: 'chromeGCP,chrome,firefox',
       description: 'Please select the browser that you want to run',
       visibleItemCount: 3,
       multiSelectDelimiter: ',',
