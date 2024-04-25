@@ -55,7 +55,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-        - env_browser_param=${BROWSER}
+        - Browser=${BROWSER}
+        - Tagging=${TAGGING}
     container_name: testing
     volumes:
       - target:/opt/target

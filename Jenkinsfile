@@ -13,6 +13,15 @@ pipeline {
       visibleItemCount: 3,
       multiSelectDelimiter: ',',
       quoteValue: false
+    ),
+    extendedChoice(
+      name: 'TAGGING',
+      type: 'PT_CHECKBOX',
+      value: 'Tiki,Shopee,Google',
+      description: 'Please select the tagging that you want to run',
+      visibleItemCount: 3,
+      multiSelectDelimiter: ',',
+      quoteValue: false
     )
   }
 
