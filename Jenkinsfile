@@ -41,6 +41,7 @@ pipeline {
     stage('Export result') {
       steps {
         echo 'exporting...'
+        sh 'docker cp testing:/opt/target /opt/target'
         // Insert your test commands here, e.g., 'mvn test'
       }
     }

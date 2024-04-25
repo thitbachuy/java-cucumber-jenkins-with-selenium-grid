@@ -58,4 +58,6 @@ services:
         - env_browser_param=${BROWSER}
     container_name: testing
     volumes:
-      - ./app/target:/opt/target
+      - target:/opt/target
+volumes:
+  target:
