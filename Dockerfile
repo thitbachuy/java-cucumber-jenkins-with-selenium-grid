@@ -7,7 +7,7 @@ RUN chmod -R 777 /apps/${app_name}
 
 #Copy source code and pom file.
 COPY src /apps/${app_name}/src
-COPY pom.xml /apps/${app_name}Z
+COPY pom.xml /apps/${app_name}
 # ENV Tagging=Tiki
 # ENV Browser=chromeGCP
 
