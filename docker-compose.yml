@@ -59,6 +59,6 @@ services:
         - Tagging=${TAGGING}
     container_name: testing
     volumes:
-      - target:./target
+      - target:target
 volumes:
   target:
