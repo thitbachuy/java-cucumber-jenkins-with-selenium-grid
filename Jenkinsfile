@@ -42,8 +42,7 @@ pipeline {
                     echo 'Creating containers...'
                     echo "BROWSER: ${params.BROWSER}"
                     echo "TAGGING: ${params.TAGGING}"
-                    sh 'docker-compose up --build'
-                    // sh 'docker-compose up --build --abort-on-container-exit'
+                    sh 'docker-compose up --build --abort-on-container-exit'
                     sh 'ls -al'
                     // Insert your build commands here, e.g., 'mvn clean install'
                 }
