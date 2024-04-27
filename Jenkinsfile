@@ -56,13 +56,13 @@ pipeline {
                 // Insert your test commands here, e.g., 'mvn test'
             }
         }
-        stage ('Send reporting'){
-//            steps {
-//             emailext mimeType: 'text/html',
-//                     body: 'Hi',
-//                     subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
-//                     to: 'noikhongvoitrai@gmail.com'
-//            }
+        stage ('Send reporting') {
+            //            steps {
+            //             emailext mimeType: 'text/html',
+            //                     body: 'Hi',
+            //                     subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
+            //                     to: 'noikhongvoitrai@gmail.com'
+            //            }
         }
         // stage('Tear down') {
         //     steps {
@@ -72,4 +72,13 @@ pipeline {
         //     }
         // }
     }
+    post {
+        always {
+            emailext mimeType: 'text/html',
+            body: 'Hi',
+            subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
+            to: 'noikhongvoitrai@gmail.com'
+        }
+    }
+}
 }
