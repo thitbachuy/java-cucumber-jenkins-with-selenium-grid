@@ -57,12 +57,12 @@ pipeline {
             }
         }
         stage ('Send reporting'){
-           steps {
-            emailext mimeType: 'text/html',
-                    body: 'Hi',
-                    subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
-                    to: 'noikhongvoitrai@gmail.com'
-           }
+//            steps {
+//             emailext mimeType: 'text/html',
+//                     body: 'Hi',
+//                     subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
+//                     to: 'noikhongvoitrai@gmail.com'
+//            }
         }
         // stage('Tear down') {
         //     steps {
