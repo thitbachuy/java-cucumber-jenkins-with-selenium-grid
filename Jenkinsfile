@@ -17,7 +17,7 @@ pipeline {
         extendedChoice(
             name: 'TAGGING',
             type: 'PT_CHECKBOX',
-            value: 'Tiki,Shopeeee,Google',
+            value: 'Tiki=@Tiki,Shopeeee=@Shopee,Google',
             description: 'Please select the tagging that you want to run',
             visibleItemCount: 3,
             multiSelectDelimiter: ',',
