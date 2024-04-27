@@ -25,27 +25,29 @@ pipeline {
         //         )
     }
     stages {
-        script {
-            properties([
-                parameters([
-                    multiselect(
-                        decisionTree: [
-                            variableDescriptions: [
-                                [
-                                    label: 'Tiki',
-                                    variableName: '@Tiki'
-                                ],
+        stage('Select TAGGING') {
+            script {
+                properties([
+                    parameters([
+                        multiselect(
+                            decisionTree: [
+                                variableDescriptions: [
+                                    [
+                                        label: 'Tiki',
+                                        variableName: '@Tiki'
+                                    ],
 [
-                                    label: 'Shopee',
-                                    variableName: '@Shopee'
+                                        label: 'Shopee',
+                                        variableName: '@Shopee'
+                                    ]
                                 ]
-                            ]
-                        ],
-                        description: 'Please select the tagging you want to run',
-                        name: 'TAGGING'
-                    )
+                            ],
+                            description: 'Please select the tagging you want to run',
+                            name: 'TAGGING'
+                        )
+                    ])
                 ])
-            ])
+            }
         }
     }
     stage('Checkout') {
