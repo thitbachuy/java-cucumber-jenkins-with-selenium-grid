@@ -56,6 +56,12 @@ pipeline {
                 // Insert your test commands here, e.g., 'mvn test'
             }
         }
+        stage ('email'){
+            emailext mimeType: 'text/html',
+                    body: 'Hi', 
+                    subject: 'Selenium: Job '${env.JOB_NAME}' Status: currentBuild.result, 
+                    to: noikhongvoitrai@gmail.com    
+        }
         // stage('Tear down') {
         //     steps {
         //         echo 'Tear down...'
