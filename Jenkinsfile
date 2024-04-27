@@ -14,43 +14,17 @@ pipeline {
             multiSelectDelimiter: ',',
             quoteValue: false
         )
-        //         extendedChoice(
-        //             name: 'TAGGING',
-        //             type: 'PT_CHECKBOX',
-        //             value: 'Tiki,Shopee,Google',
-        //             description: 'Please select the tagging that you want to run',
-        //             visibleItemCount: 3,
-        //             multiSelectDelimiter: ',',
-        //             quoteValue: false
-        //         )
+        extendedChoice(
+            name: 'TAGGING',
+            type: 'PT_CHECKBOX',
+            value: 'Tiki,Shopee,Google',
+            description: 'Please select the tagging that you want to run',
+            visibleItemCount: 3,
+            multiSelectDelimiter: ',',
+            quoteValue: false
+        )
     }
     stages {
-        stage('Select TAGGING') {
-            steps {
-                script {
-                    properties([
-                        parameters([
-                            multiselect(
-                                decisionTree: [
-                                    variableDescriptions: [
-                                        [
-                                            label: 'Tiki',
-                                            variableName: '@Tiki'
-                                        ],
-[
-                                            label: 'Shopee',
-                                            variableName: '@Shopee'
-                                        ]
-                                    ]
-                                ],
-                                description: 'Please select the tagging you want to run',
-                                name: 'TAGGING'
-                            )
-                        ])
-                    ])
-                }
-            }
-        }
         stage('Checkout') {
             steps {
                 echo 'Checkout...'
@@ -82,13 +56,13 @@ pipeline {
                 // Insert your test commands here, e.g., 'mvn test'
             }
         }
-        stage ('email') {
-            steps {
-                emailext mimeType: 'text/html',
-                body: 'Hi',
-                subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
-                to: 'noikhongvoitrai@gmail.com'
-            }
+        stage ('Send reporting'){
+           steps {
+            emailext mimeType: 'text/html',
+                    body: 'Hi',
+                    subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
+                    to: 'noikhongvoitrai@gmail.com'
+           }
         }
         // stage('Tear down') {
         //     steps {
