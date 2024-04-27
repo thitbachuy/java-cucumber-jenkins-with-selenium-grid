@@ -51,51 +51,51 @@ pipeline {
                 }
             }
         }
-    }
-    stage('Checkout') {
-        steps {
-            echo 'Checkout...'
-            checkout([$class: 'GitSCM', branches: [
-                [name: '*/master']
-            ], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [
-                [credentialsId: 'jenkins-user-github', url: 'https://github.com/thitbachuy/selenium-java-02082023.git']
-            ]])
-            sh "ls -lart ./*"
-        }
-    }
-    stage('Create containers and run test') {
-        steps {
-            script {
-                echo 'Creating containers...'
-                echo "BROWSER: ${params.BROWSER}"
-                echo "TAGGING: ${params.TAGGING}"
-                sh 'docker-compose up --build --abort-on-container-exit'
-                sh 'ls -al'
-                // Insert your build commands here, e.g., 'mvn clean install'
+        stage('Checkout') {
+            steps {
+                echo 'Checkout...'
+                checkout([$class: 'GitSCM', branches: [
+                    [name: '*/master']
+                ], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [
+                    [credentialsId: 'jenkins-user-github', url: 'https://github.com/thitbachuy/selenium-java-02082023.git']
+                ]])
+                sh "ls -lart ./*"
             }
         }
-    }
-    stage('Export result') {
-        steps {
-            echo 'exporting...'
-            //         sh 'docker cp testing:/target /target'
-            //         sh 'ls -al /target'
-            // Insert your test commands here, e.g., 'mvn test'
+        stage('Create containers and run test') {
+            steps {
+                script {
+                    echo 'Creating containers...'
+                    echo "BROWSER: ${params.BROWSER}"
+                    echo "TAGGING: ${params.TAGGING}"
+                    sh 'docker-compose up --build --abort-on-container-exit'
+                    sh 'ls -al'
+                    // Insert your build commands here, e.g., 'mvn clean install'
+                }
+            }
         }
-    }
-    stage ('email') {
-        steps {
-            emailext mimeType: 'text/html',
-            body: 'Hi',
-            subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
-            to: 'noikhongvoitrai@gmail.com'
+        stage('Export result') {
+            steps {
+                echo 'exporting...'
+                //         sh 'docker cp testing:/target /target'
+                //         sh 'ls -al /target'
+                // Insert your test commands here, e.g., 'mvn test'
+            }
         }
+        stage ('email') {
+            steps {
+                emailext mimeType: 'text/html',
+                body: 'Hi',
+                subject: "Selenium: Job '${env.JOB_NAME}' Status: currentBuild.resul",
+                to: 'noikhongvoitrai@gmail.com'
+            }
+        }
+        // stage('Tear down') {
+        //     steps {
+        //         echo 'Tear down...'
+        //         sh 'docker-compose down'
+        //         // Insert your build commands here, e.g., 'mvn clean install'
+        //     }
+        // }
     }
-    // stage('Tear down') {
-    //     steps {
-    //         echo 'Tear down...'
-    //         sh 'docker-compose down'
-    //         // Insert your build commands here, e.g., 'mvn clean install'
-    //     }
-    // }
 }
