@@ -59,6 +59,6 @@ services:
         - Tagging=${tagging}
     container_name: testing
     volumes:
-          - ./docker/target:/apps/automation_testing/target
+          - ./target:/apps/automation_testing/target
 #volumes:
 #  target:
