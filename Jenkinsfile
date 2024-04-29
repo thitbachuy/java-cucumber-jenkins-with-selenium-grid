@@ -56,13 +56,13 @@ pipeline {
                 }
             }
         }
-        stage('Export result') {
-            steps {
-                echo 'exporting...'
-                sh 'docker cp testing:./target .'
-                sh 'ls -al /target'
-            }
-        }
+        // stage('Export result') {
+        //     steps {
+        //         echo 'exporting...'
+        //         sh 'docker cp testing:./target .'
+        //         sh 'ls -al /target'
+        //     }
+        // }
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
