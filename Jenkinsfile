@@ -57,7 +57,7 @@ pipeline {
         stage('Export result') {
             steps {
                 echo 'exporting...'
-                sh 'docker cp testing:/target .'
+                sh 'docker cp testing:./target .'
                 sh 'ls -al /target'
             }
         }

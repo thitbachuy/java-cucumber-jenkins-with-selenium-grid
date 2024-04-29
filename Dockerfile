@@ -10,6 +10,6 @@ COPY src /apps/${app_name}/src
 COPY pom.xml /apps/${app_name}
 # ENV Tagging Tiki
 # ENV Browser chromeGCP
-RUN echo "----Tagging: " ${Tagging}
+RUN echo "----Tagging: " $Tagging
 
 ENTRYPOINT mvn test -Dcucumber.filter.tags=${Tagging} -Dcucumber.filter -Dbrowser=${Browser} -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
