@@ -12,4 +12,4 @@ COPY pom.xml /apps/${app_name}
 # ENV Browser chromeGCP
 RUN echo "----Tagging: " $Tagging
 
-ENTRYPOINT mvn test -Dcucumber.filter.tags=${Tagging} -Dcucumber.filter -Dbrowser=${Browser} -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
+ENTRYPOINT mvn test -Dcucumber.options="--tags ${Tagging}" -Dcucumber.filter -Dbrowser=${Browser} -DexecutingEnv=test -DtestedEnv=uat -Dplatform=desktop
