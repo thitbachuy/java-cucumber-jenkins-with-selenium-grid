@@ -42,6 +42,11 @@ pipeline {
                     echo 'Creating containers...'
                     echo "BROWSER: ${params.BROWSER}"
                     echo "TAGGING: ${params.TAGGING}"
+                    def selectedOptions = params.TAGGING.split(',')
+                    selectedOptions = selectedOptions.collect { "@${it}" }
+                    def tagging = selectedOptions.join(',')
+                    echo "Selected options with '@': ${selectedOptions.join(',')}"
+                    echo "tagging: ${tagging}"
                     sh 'docker-compose up --build --abort-on-container-exit'
                     sh 'ls -al'
                     // Insert your build commands here, e.g., 'mvn clean install'

@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile
     environment:
         - Browser=${BROWSER}
-        - Tagging=${TAGGING}
+        - Tagging=${tagging}
     container_name: testing
     volumes:
           - ./docker/target:/apps/automation_testing/target
