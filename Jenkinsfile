@@ -66,8 +66,6 @@ pipeline {
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
-                params.TAGGING = ''
-                params.BROWSER = ''
                 sh 'docker-compose down'
             }
         }
