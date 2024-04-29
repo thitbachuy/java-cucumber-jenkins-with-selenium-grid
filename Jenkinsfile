@@ -11,6 +11,7 @@ pipeline {
             value: 'chromeGCP,chrome,firefox',
             description: 'Please select the browser that you want to run',
             visibleItemCount: 3,
+            defaultValue: '',
             multiSelectDelimiter: ',',
             quoteValue: false
         )
@@ -20,6 +21,7 @@ pipeline {
             value: 'Tiki,Shopee,Google',
             description: 'Please select the tagging that you want to run',
             visibleItemCount: 3,
+            defaultValue: '',
             multiSelectDelimiter: ',',
             quoteValue: false
         )
