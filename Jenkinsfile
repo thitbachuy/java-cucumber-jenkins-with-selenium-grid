@@ -45,24 +45,19 @@ pipeline {
                     echo "BROWSER: ${params.BROWSER}"
                     echo "TAGGING: ${params.TAGGING}"
                     def selectedOptions = params.TAGGING.split(',')
-                    selectedOptions = selectedOptions.collect {
-                        "@${it}"
+                    for (int i = 0; i < selectedOptions.size(); i++) {
+                        if (i > 0) {
+                            tagging += " or "
+                        }
+                        selectedOptions[i] = "@" +  selectedOptions[i]
+                        tagging += selectedOptions[i]
                     }
-                    def tagging = selectedOptions.join(',')
-                    echo "Selected options with '@': ${selectedOptions.join(',')}"
-                    echo "tagging: ${tagging}"
+                    echo "tagging: ${tagging}"                  
                     sh 'docker-compose up --build --abort-on-container-exit'
                     sh 'ls -al'
                 }
             }
         }
-        // stage('Export result') {
-        //     steps {
-        //         echo 'exporting...'
-        //         sh 'docker cp testing:./target .'
-        //         sh 'ls -al /target'
-        //     }
-        // }
         stage('Tear down') {
             steps {
                 echo 'Tear down...'
