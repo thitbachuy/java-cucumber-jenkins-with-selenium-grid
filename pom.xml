@@ -4,8 +4,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>java-cucumber-02122023</groupId>
-  <artifactId>e2e-ta-framework</artifactId>
+  <groupId>java-cucumber-jenkins-with-selenium-grid</groupId>
+  <artifactId>java-cucumber-jenkins-with-selenium-grid</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <properties>
