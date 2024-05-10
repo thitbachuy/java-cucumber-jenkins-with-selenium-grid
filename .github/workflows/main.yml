@@ -2,11 +2,14 @@ name: Github actions Maven build
 
 on:
   push:
-    branches: [ master ]
-
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 jobs:
   build:
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Step 1: checkout main branch from Github
         uses: actions/checkout@v4
